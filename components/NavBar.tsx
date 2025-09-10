@@ -1,10 +1,24 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { AiFillBug } from "react-icons/ai";
 
 const NavBar = () => {
-  const links = [
-    { label: "Dashboard", href: "/" },
-    { label: "Issues", href: "/issues" }
+  const pathname = usePathname();
+
+  const navigationItems = [
+    {
+      label: "Dashboard",
+      href: "/",
+      isActive: pathname === "/"
+    },
+    {
+      label: "Issues",
+      href: "/issues",
+      isActive: pathname === "/issues"
+    }
   ];
 
   return (
@@ -13,13 +27,16 @@ const NavBar = () => {
         <AiFillBug className="text-2xl" />
       </Link>
       <ul className="flex flex-row items-center gap-8">
-        {links.map((link) => (
-          <li key={link.href}>
+        {navigationItems.map((item) => (
+          <li key={item.href}>
             <Link
-              href={link.href}
-              className="text-gray-500 transition-colors hover:text-gray-800"
+              href={item.href}
+              className={cn(
+                "transition-colors hover:text-gray-800",
+                item.isActive ? "text-gray-900" : "text-gray-500"
+              )}
             >
-              {link.label}
+              {item.label}
             </Link>
           </li>
         ))}
