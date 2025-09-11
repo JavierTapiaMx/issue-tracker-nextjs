@@ -25,8 +25,8 @@ const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
 });
 
 const formSchema = z.object({
-  title: z.string().min(1).max(255),
-  description: z.string().min(1)
+  title: z.string().min(1, "Title is required").max(255),
+  description: z.string().min(1, "Description is required")
 });
 
 const NewIssuePage = () => {
@@ -42,15 +42,23 @@ const NewIssuePage = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await addIssueMutation.mutateAsync({
-      title: values.title,
-      description: values.description
-    });
-
-    toast.success("Issue created successfully!");
-
-    router.push("/issues");
+    await addIssueMutation
+      .mutateAsync({
+        title: values.title,
+        description: values.description
+      })
+      .then(() => {
+        toast.success("Issue created successfully!");
+        router.push("/issues");
+      })
+      .catch((error) => {
+        console.error("Error creating issue:", error);
+        toast.error("An error occurred while creating the issue.");
+      });
   };
+
+  const callOutStyle =
+    "rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700";
 
   return (
     <Form {...form}>
@@ -67,7 +75,7 @@ const NewIssuePage = () => {
               <FormControl>
                 <Input placeholder="Title" {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage className={callOutStyle} />
             </FormItem>
           )}
         />
@@ -80,7 +88,7 @@ const NewIssuePage = () => {
               <FormControl>
                 <SimpleMDE placeholder="Description" {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage className={callOutStyle} />
             </FormItem>
           )}
         />

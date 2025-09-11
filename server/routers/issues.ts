@@ -4,8 +4,8 @@ import { issuesTable } from "@/db/schema";
 import { procedure, router } from "@/server/trpc";
 
 const createIssueSchema = z.object({
-  title: z.string().min(1).max(255),
-  description: z.string().min(1)
+  title: z.string().min(1, "Title is required").max(255),
+  description: z.string().min(1, "Description is required")
 });
 
 export const issuesRouter = router({
