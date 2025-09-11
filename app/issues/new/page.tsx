@@ -17,13 +17,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import "easymde/dist/easymde.min.css";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false
 });
 
 const NewIssuePage = () => {
-  const { addIssue, isLoading } = useIssues();
+  const { addIssue, isLoading: isSubmitting } = useIssues();
 
   const form = useForm<AddIssueInput>({
     resolver: zodResolver(addIssueSchema),
@@ -72,8 +73,14 @@ const NewIssuePage = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Submitting..." : "Submit New Issue"}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <Spinner /> Submitting...
+            </span>
+          ) : (
+            "Submit New Issue"
+          )}
         </Button>
       </form>
     </Form>
