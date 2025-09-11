@@ -3,29 +3,29 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus, RefreshCw } from "lucide-react";
 import IssuesTable from "@/components/IssuesTable";
-import delay from "delay";
+// import delay from "delay";
 
 const IssuesPage = async () => {
   let issues;
-  let error: string | null = null;
+  let errorMessage: string | null = null;
 
-  await delay(2000); // Simulate network delay for demonstration
+  // await delay(2000); // Simulate network delay for demonstration
 
   try {
     issues = await trpc.issues.getAll();
-  } catch (err) {
-    console.error("Error fetching issues:", err);
+  } catch (error) {
+    console.error("Error fetching issues:", error);
 
     // Extract meaningful error message from tRPC error
-    if (err && typeof err === "object" && "message" in err) {
-      error = err.message as string;
+    if (error && typeof error === "object" && "message" in error) {
+      errorMessage = error.message as string;
     } else {
-      error = "An unexpected error occurred while loading issues";
+      errorMessage = "An unexpected error occurred while loading issues";
     }
   }
 
   // Render error state
-  if (error) {
+  if (errorMessage) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
@@ -48,7 +48,7 @@ const IssuesPage = async () => {
             <h3 className="text-destructive mb-2 text-lg font-semibold">
               Unable to load issues
             </h3>
-            <p className="text-muted-foreground mb-4">{error}</p>
+            <p className="text-muted-foreground mb-4">{errorMessage}</p>
             <div className="flex justify-center gap-2">
               <Button asChild variant="outline">
                 <Link href="/issues" className="flex items-center gap-2">
