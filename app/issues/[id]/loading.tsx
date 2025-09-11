@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 
 const LoadingIssueDetailsPage = async () => {
   return (
@@ -9,7 +10,16 @@ const LoadingIssueDetailsPage = async () => {
         <Skeleton className="h-4 w-1/12" />
         <Skeleton className="h-4 w-1/12" />
       </div>
-      <Skeleton className="h-[400px] w-full" />
+      <Card className="h-[400px] w-full">
+        <CardContent>
+          <Skeleton className="mb-7 h-4 w-1/12" />
+          <Skeleton className="mb-4 h-8 w-1/4" />
+          <Skeleton className="mb-4 h-4 w-full" />
+          <Skeleton className="mb-4 h-4 w-full" />
+          <Skeleton className="mb-4 h-4 w-1/2" />
+        </CardContent>
+      </Card>
+      <Skeleton className="mt-4 h-8 w-1/12" />
     </div>
   );
 };

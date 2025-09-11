@@ -1,10 +1,12 @@
 import { trpc } from "@/trpc/server";
 import { Issue } from "@/types/Issue";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 import IssuePriorityBadge from "@/components/IssuePriorityBadge";
 import IssueStatusBadge from "@/components/IssueStatusBadge";
 
+import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import {
   Card,
@@ -12,6 +14,7 @@ import {
   CardDescription,
   CardTitle
 } from "@/components/ui/card";
+// import delay from "delay";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -20,6 +23,8 @@ interface Props {
 const IssueDetailsPage = async ({ params }: Props) => {
   let issue: Issue | null = null;
   let errorMessage: string | null = null;
+
+  // await delay(2000); // Simulate network delay for demonstration
 
   const { id } = await params;
   const issueId = parseInt(id, 10);
@@ -67,6 +72,11 @@ const IssueDetailsPage = async ({ params }: Props) => {
           </CardDescription>
         </CardContent>
       </Card>
+      <Button variant="outline" className="mt-4">
+        <Link className="text-muted-foreground text-sm" href="/issues">
+          Close
+        </Link>
+      </Button>
     </div>
   );
 };
