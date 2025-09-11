@@ -2,6 +2,19 @@ import { trpc } from "@/trpc/server";
 import { Issue } from "@/types/Issue";
 import { notFound } from "next/navigation";
 
+import IssuePriorityBadge from "@/components/IssuePriorityBadge";
+import IssueStatusBadge from "@/components/IssueStatusBadge";
+
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+
 interface Props {
   params: { id: string };
 }
@@ -29,13 +42,24 @@ const IssueDetailsPage = async ({ params }: Props) => {
 
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold">{issue.title}</h1>
-      <p className="mb-2">Description: {issue.description}</p>
-      <p className="mb-2">Status: {issue.status}</p>
-      <p className="mb-2">Priority: {issue.priority}</p>
-      <p className="text-muted-foreground text-sm">
-        Created At: {issue.createdAt.toLocaleDateString()}
-      </p>
+      <h1 className="mb-2 text-2xl font-bold">{issue.title}</h1>
+      <div className="mb-4 flex flex-row items-center gap-4">
+        <IssueStatusBadge status={issue.status} />
+        <IssuePriorityBadge priority={issue.priority} />
+        <p className="text-muted-foreground text-sm">
+          {issue.createdAt.toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          })}
+        </p>
+      </div>
+      <Card>
+        <CardContent>
+          <CardTitle className="mb-4">Description</CardTitle>
+          <CardDescription>{issue.description}</CardDescription>
+        </CardContent>
+      </Card>
     </div>
   );
 };
