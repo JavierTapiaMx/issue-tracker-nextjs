@@ -1,12 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import dynamic from "next/dynamic";
-import { trpc } from "@/trpc/client";
-import { toast } from "sonner";
+import { addIssueSchema, type AddIssueInput } from "@/lib/validations/issue";
+import { useIssues } from "@/hooks/useIssues";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,37 +22,19 @@ const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false
 });
 
-const formSchema = z.object({
-  title: z.string().min(1, "Title is required").max(255),
-  description: z.string().min(1, "Description is required")
-});
-
 const NewIssuePage = () => {
-  const addIssueMutation = trpc.issues.add.useMutation();
-  const router = useRouter();
+  const { addIssue, isLoading } = useIssues();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<AddIssueInput>({
+    resolver: zodResolver(addIssueSchema),
     defaultValues: {
       title: "",
       description: ""
     }
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await addIssueMutation
-      .mutateAsync({
-        title: values.title,
-        description: values.description
-      })
-      .then(() => {
-        toast.success("Issue created successfully!");
-        router.push("/issues");
-      })
-      .catch((error) => {
-        console.error("Error creating issue:", error);
-        toast.error("An error occurred while creating the issue.");
-      });
+  const onSubmit = async (values: AddIssueInput) => {
+    await addIssue(values);
   };
 
   const callOutStyle =
@@ -92,7 +72,9 @@ const NewIssuePage = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit New Issue</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Creating..." : "Submit New Issue"}
+        </Button>
       </form>
     </Form>
   );
