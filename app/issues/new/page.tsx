@@ -73,7 +73,7 @@ const NewIssuePage = () => {
           )}
         />
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Creating..." : "Submit New Issue"}
+          {isLoading ? "Submitting..." : "Submit New Issue"}
         </Button>
       </form>
     </Form>
