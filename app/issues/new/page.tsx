@@ -24,7 +24,7 @@ const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
 });
 
 const NewIssuePage = () => {
-  const { addIssue, isLoading: isSubmitting } = useIssues();
+  const { addIssue, isPending: isSubmitting } = useIssues();
 
   const form = useForm<AddIssueInput>({
     resolver: zodResolver(addIssueSchema),

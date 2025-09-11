@@ -74,8 +74,8 @@ export const useIssues = () => {
     addIssue,
     updateIssue,
     deleteIssue,
-    isLoading:
-      issues.isLoading ||
+    isLoading: issues.isLoading,
+    isPending:
       addIssueMutation.isPending ||
       updateIssueMutation.isPending ||
       deleteIssueMutation.isPending
