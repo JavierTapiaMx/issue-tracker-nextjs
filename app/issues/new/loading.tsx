@@ -24,7 +24,7 @@ const LoadingNewIssuePage = async () => {
             <Skeleton className="h-4 w-1/6" />
             <Skeleton className="h-8 w-2/6" />
           </div>
-          <div className="flex flex-row justify-end gap-2">
+          <div className="flex flex-row gap-2">
             <Skeleton className="mt-4 h-8 w-3/12" />
             <Skeleton className="mt-4 h-8 w-1/6" />
           </div>

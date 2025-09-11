@@ -109,7 +109,7 @@ const NewIssuePage = () => {
                 </FormItem>
               )}
             />
-            <div className="mt-4 flex flex-row items-center justify-end gap-2">
+            <div className="mt-4 flex flex-row items-center gap-2">
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
