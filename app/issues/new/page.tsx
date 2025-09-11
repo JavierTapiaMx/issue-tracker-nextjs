@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { addIssueSchema, type AddIssueInput } from "@/lib/validations/issue";
 import { useIssues } from "@/hooks/useIssues";
 import { IssuePriorities } from "@/db/schema";
@@ -100,15 +101,22 @@ const NewIssuePage = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="mt-4 w-full" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <span className="flex items-center gap-2">
-              <Spinner /> Submitting...
-            </span>
-          ) : (
-            "Submit New Issue"
-          )}
-        </Button>
+        <div className="mt-4 flex flex-row items-center justify-end gap-2">
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <Spinner /> Submitting...
+              </span>
+            ) : (
+              "Submit New Issue"
+            )}
+          </Button>
+          <Button variant="outline">
+            <Link className="text-muted-foreground text-sm" href="/issues">
+              Cancel
+            </Link>
+          </Button>
+        </div>
       </form>
     </Form>
   );
