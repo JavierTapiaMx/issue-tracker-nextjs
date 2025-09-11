@@ -3,20 +3,23 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import dynamic from "next/dynamic";
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import Link from "next/link";
+import "easymde/dist/easymde.min.css";
+
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false
+});
 
 const formSchema = z.object({
   title: z.string().min(1).max(255),
@@ -40,7 +43,10 @@ const NewIssuePage = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="max-w-xl space-y-3"
+      >
         <FormField
           control={form.control}
           name="title"
@@ -61,7 +67,7 @@ const NewIssuePage = () => {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="Description" {...field} />
+                <SimpleMDE placeholder="Description" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
