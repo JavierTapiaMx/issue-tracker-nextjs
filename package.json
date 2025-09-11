@@ -19,6 +19,7 @@
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
+    "delay": "^6.0.0",
     "dotenv": "^17.2.2",
     "drizzle-orm": "^0.44.5",
     "easymde": "^2.20.0",
