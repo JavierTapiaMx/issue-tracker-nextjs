@@ -9,7 +9,8 @@ export type GetIssueInput = z.infer<typeof getIssueSchema>;
 
 export const addIssueSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
-  description: z.string().min(1, "Description is required")
+  description: z.string().min(1, "Description is required"),
+  priority: z.enum(IssuePriorities)
 });
 
 export type AddIssueInput = z.infer<typeof addIssueSchema>;

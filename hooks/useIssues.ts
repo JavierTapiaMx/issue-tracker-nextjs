@@ -29,7 +29,8 @@ export const useIssues = () => {
     try {
       await addIssueMutation.mutateAsync({
         title: values.title,
-        description: values.description
+        description: values.description,
+        priority: values.priority
       });
       toast.success("Issue created successfully!");
       router.push("/issues");

@@ -5,8 +5,11 @@ import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
 import { addIssueSchema, type AddIssueInput } from "@/lib/validations/issue";
 import { useIssues } from "@/hooks/useIssues";
+import { IssuePriorities } from "@/db/schema";
 
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import {
   Form,
   FormControl,
@@ -15,9 +18,14 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 import "easymde/dist/easymde.min.css";
-import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false
@@ -30,7 +38,8 @@ const NewIssuePage = () => {
     resolver: zodResolver(addIssueSchema),
     defaultValues: {
       title: "",
-      description: ""
+      description: "",
+      priority: IssuePriorities.LOW
     }
   });
 
@@ -69,7 +78,29 @@ const NewIssuePage = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isSubmitting}>
+        <FormField
+          control={form.control}
+          name="priority"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Priority</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select a priority" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage className={callOutStyle} />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="mt-4 w-full" disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <Spinner /> Submitting...
