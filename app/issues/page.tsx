@@ -29,10 +29,10 @@ const IssuesPage = async () => {
   if (errorMessage) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-row items-center justify-between">
           <div>
             <h1 className="text-foreground text-3xl font-bold">Issues</h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground">
               Manage and track your project issues
             </p>
           </div>
@@ -70,10 +70,10 @@ const IssuesPage = async () => {
   // Render success state
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-row items-center justify-between">
         <div>
           <h1 className="text-foreground text-3xl font-bold">Issues</h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground">
             Manage and track your project issues
           </p>
         </div>
