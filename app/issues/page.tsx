@@ -1,12 +1,15 @@
 import { trpc } from "@/trpc/server";
 import { Button } from "@/components/ui/button";
-import IssuesTable from "@/components/IssuesTable";
 import Link from "next/link";
 import { Plus, RefreshCw } from "lucide-react";
+import IssuesTable from "@/components/IssuesTable";
+import delay from "delay";
 
 const IssuesPage = async () => {
   let issues;
   let error: string | null = null;
+
+  await delay(2000); // Simulate network delay for demonstration
 
   try {
     issues = await trpc.issues.getAll();
