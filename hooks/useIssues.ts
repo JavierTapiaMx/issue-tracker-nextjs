@@ -15,10 +15,9 @@ export const useIssues = () => {
   const deleteIssueMutation = trpc.issues.delete.useMutation();
   const router = useRouter();
 
-  const getIssueById = async ({ id }: GetIssueInput) => {
+  const getIssueById = ({ id }: GetIssueInput) => {
     try {
-      const utils = trpc.useUtils();
-      const issue = await utils.issues.getById.fetch({ id });
+      const issue = trpc.issues.getById.useQuery({ id });
       return issue;
     } catch (error) {
       console.error("Error fetching issue:", error);
