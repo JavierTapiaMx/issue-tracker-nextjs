@@ -34,17 +34,13 @@ const NewIssuePage = () => {
     }
   });
 
-  const onSubmit = async (values: AddIssueInput) => {
-    await addIssue(values);
-  };
-
   const callOutStyle =
     "rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700";
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(async (values) => await addIssue(values))}
         className="max-w-xl space-y-3"
       >
         <FormField
