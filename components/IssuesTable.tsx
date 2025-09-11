@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
+import Link from "next/link";
 
 interface Props {
   issues: Issue[];
@@ -45,7 +46,9 @@ const IssuesTable = ({ issues }: Props) => {
                 {issues.map((issue) => (
                   <TableRow key={issue.id} className="hover:bg-muted/50">
                     <TableCell className="space-y-2">
-                      <div className="font-medium">{issue.title}</div>
+                      <div className="font-medium">
+                        <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
+                      </div>
                       {/* Mobile-only: Show additional info below title */}
                       <div className="text-muted-foreground block space-y-2 text-sm md:hidden">
                         <div className="flex items-center gap-2">
