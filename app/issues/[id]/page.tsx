@@ -7,24 +7,28 @@ import IssueStatusBadge from "@/components/IssueStatusBadge";
 
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
-  CardHeader,
   CardTitle
 } from "@/components/ui/card";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const IssueDetailsPage = async ({ params }: Props) => {
   let issue: Issue | null = null;
   let errorMessage: string | null = null;
 
+  const { id } = await params;
+  const issueId = parseInt(id, 10);
+
+  if (isNaN(issueId) || issueId <= 0) {
+    notFound();
+  }
+
   try {
-    issue = await trpc.issues.getById({ id: parseInt(params.id, 10) });
+    issue = await trpc.issues.getById({ id: issueId });
   } catch (error) {
     console.error("Error fetching issues:", error);
 
