@@ -1,6 +1,7 @@
 "use client";
 
 import { Issue } from "@/types/Issue";
+import IssueStatusBadge from "./IssueStatusBadge";
 
 import {
   Table,
@@ -20,9 +21,7 @@ const TitleCell = ({ issue }: { issue: Issue }) => {
       {/* Mobile-only: Show additional info below title */}
       <div className="text-muted-foreground block space-y-1 text-sm md:hidden">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
-            {issue.status.replace("_", " ").toUpperCase()}
-          </span>
+          <IssueStatusBadge status={issue.status} />
           <span className="inline-flex items-center rounded-full bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-500/10 ring-inset">
             {issue.priority.toUpperCase()}
           </span>
@@ -36,15 +35,6 @@ const TitleCell = ({ issue }: { issue: Issue }) => {
         </div>
       </div>
     </div>
-  );
-};
-
-// Component to render status badge
-const StatusCell = ({ status }: { status: string }) => {
-  return (
-    <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset">
-      {status.replace("_", " ").toUpperCase()}
-    </span>
   );
 };
 
@@ -105,7 +95,7 @@ const IssuesTable = ({ issues }: Props) => {
                         <TitleCell issue={issue} />
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <StatusCell status={issue.status} />
+                        <IssueStatusBadge status={issue.status} />
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         <PriorityCell priority={issue.priority} />
