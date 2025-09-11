@@ -1,10 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import dynamic from "next/dynamic";
 import { trpc } from "@/trpc/client";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +31,7 @@ const formSchema = z.object({
 
 const NewIssuePage = () => {
   const addIssueMutation = trpc.issues.add.useMutation();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,7 +47,9 @@ const NewIssuePage = () => {
       description: values.description
     });
 
-    form.reset();
+    toast.success("Issue created successfully!");
+
+    router.push("/issues");
   };
 
   return (
