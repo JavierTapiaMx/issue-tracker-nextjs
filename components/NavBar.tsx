@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { AiFillBug } from "react-icons/ai";
+import ThemeToggle from "./ThemeToggle";
 
 const NavBar = () => {
   const pathname = usePathname();
@@ -22,25 +23,30 @@ const NavBar = () => {
   ];
 
   return (
-    <nav className="flex flex-row items-center gap-8 border-b p-4">
-      <Link href="/">
-        <AiFillBug className="text-2xl" />
-      </Link>
-      <ul className="flex flex-row items-center gap-8">
-        {navigationItems.map((item) => (
-          <li key={item.href}>
-            <Link
-              href={item.href}
-              className={cn(
-                "transition-colors hover:text-gray-800",
-                item.isActive ? "text-gray-900" : "text-gray-500"
-              )}
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <nav className="flex flex-row items-center justify-between border-b p-4">
+      <div className="flex flex-row items-center gap-8">
+        <Link href="/">
+          <AiFillBug className="text-2xl" />
+        </Link>
+        <ul className="flex flex-row items-center gap-8">
+          {navigationItems.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className={cn(
+                  "transition-colors hover:text-gray-800 dark:hover:text-white",
+                  item.isActive
+                    ? "text-gray-900 dark:text-gray-100"
+                    : "text-gray-500 dark:text-gray-400"
+                )}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <ThemeToggle />
     </nav>
   );
 };
