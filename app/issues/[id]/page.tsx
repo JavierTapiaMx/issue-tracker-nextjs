@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import IssuePriorityBadge from "@/components/IssuePriorityBadge";
 import IssueStatusBadge from "@/components/IssueStatusBadge";
 
+import ReactMarkdown from "react-markdown";
 import {
   Card,
   CardContent,
@@ -45,7 +46,7 @@ const IssueDetailsPage = async ({ params }: Props) => {
   }
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-8">
       <h1 className="mb-2 text-2xl font-bold">{issue.title}</h1>
       <div className="mb-4 flex flex-row items-center gap-4">
         <IssueStatusBadge status={issue.status} />
@@ -60,8 +61,10 @@ const IssueDetailsPage = async ({ params }: Props) => {
       </div>
       <Card>
         <CardContent>
-          <CardTitle className="mb-4">Description</CardTitle>
-          <CardDescription>{issue.description}</CardDescription>
+          <CardTitle className="text-muted mb-4">Description</CardTitle>
+          <CardDescription className="prose">
+            <ReactMarkdown>{issue.description}</ReactMarkdown>
+          </CardDescription>
         </CardContent>
       </Card>
     </div>
