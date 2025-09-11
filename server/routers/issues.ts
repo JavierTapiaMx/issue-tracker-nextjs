@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { db } from "@/db/drizzle";
 import { issuesTable } from "@/db/schema";
@@ -74,16 +74,7 @@ export const issuesRouter = router({
     const { title, description } = opts.input;
     try {
       await db.insert(issuesTable).values({ title, description });
-
-      // Get the most recently inserted record for this connection
-      // This is a common pattern for MySQL when you don't have RETURNING
-      const insertedIssue = await db
-        .select()
-        .from(issuesTable)
-        .orderBy(desc(issuesTable.id))
-        .limit(1);
-
-      return insertedIssue[0];
+      return { success: true };
     } catch (error) {
       console.error("Database error when creating issue:", error);
 
@@ -111,25 +102,8 @@ export const issuesRouter = router({
         .set({ title, description, status, priority })
         .where(eq(issuesTable.id, id));
 
-      // Get the updated record
-      const updatedIssue = await db
-        .select()
-        .from(issuesTable)
-        .where(eq(issuesTable.id, id));
-
-      if (updatedIssue.length === 0) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: `Issue with ID ${id} not found`
-        });
-      }
-
-      return updatedIssue[0];
+      return { success: true };
     } catch (error) {
-      if (error instanceof TRPCError) {
-        throw error; // Re-throw TRPCErrors as-is
-      }
-
       console.error("Database error when updating issue:", error);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
@@ -141,28 +115,9 @@ export const issuesRouter = router({
   delete: procedure.input(deleteIssueSchema).mutation(async (opts) => {
     const { id } = opts.input;
     try {
-      // First get the issue to return it after deletion
-      const issueToDelete = await db
-        .select()
-        .from(issuesTable)
-        .where(eq(issuesTable.id, id));
-
-      if (issueToDelete.length === 0) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: `Issue with ID ${id} not found`
-        });
-      }
-
-      // Delete the issue
       await db.delete(issuesTable).where(eq(issuesTable.id, id));
-
-      return { success: true, deletedIssue: issueToDelete[0] };
+      return { success: true };
     } catch (error) {
-      if (error instanceof TRPCError) {
-        throw error; // Re-throw TRPCErrors as-is
-      }
-
       console.error("Database error when deleting issue:", error);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
