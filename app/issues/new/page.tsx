@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import dynamic from "next/dynamic";
+import { trpc } from "@/trpc/client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,8 @@ const formSchema = z.object({
 });
 
 const NewIssuePage = () => {
+  const addIssueMutation = trpc.issues.add.useMutation();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,11 +38,14 @@ const NewIssuePage = () => {
     }
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    await addIssueMutation.mutateAsync({
+      title: values.title,
+      description: values.description
+    });
+
+    form.reset();
+  };
 
   return (
     <Form {...form}>
