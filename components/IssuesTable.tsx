@@ -47,7 +47,12 @@ const IssuesTable = ({ issues }: Props) => {
                   <TableRow key={issue.id} className="hover:bg-muted/50">
                     <TableCell className="space-y-2">
                       <div className="font-medium">
-                        <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
+                        <Link
+                          href={`/issues/${issue.id}`}
+                          className="hover:text-primary hover:underline"
+                        >
+                          {issue.title}
+                        </Link>
                       </div>
                       {/* Mobile-only: Show additional info below title */}
                       <div className="text-muted-foreground block space-y-2 text-sm md:hidden">
