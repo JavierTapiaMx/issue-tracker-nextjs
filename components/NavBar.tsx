@@ -18,7 +18,7 @@ const NavBar = () => {
     {
       label: "Issues",
       href: "/issues",
-      isActive: pathname === "/issues"
+      isActive: pathname.startsWith("/issues")
     }
   ];
 
