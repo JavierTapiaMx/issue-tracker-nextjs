@@ -8,13 +8,13 @@ import {
 } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
-enum IssueStatus {
+export enum IssueStatus {
   OPEN = "open",
   IN_PROGRESS = "in_progress",
   CLOSED = "closed"
 }
 
-enum IssuePriorities {
+export enum IssuePriorities {
   LOW = "low",
   MEDIUM = "medium",
   HIGH = "high"
