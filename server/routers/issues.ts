@@ -71,9 +71,9 @@ export const issuesRouter = router({
     }
   }),
   add: procedure.input(addIssueSchema).mutation(async (opts) => {
-    const { title, description } = opts.input;
+    const { title, description, priority } = opts.input;
     try {
-      await db.insert(issuesTable).values({ title, description });
+      await db.insert(issuesTable).values({ title, description, priority });
       return { success: true };
     } catch (error) {
       console.error("Database error when creating issue:", error);
