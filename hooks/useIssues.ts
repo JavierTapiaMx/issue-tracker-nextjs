@@ -1,12 +1,8 @@
-import { useRouter } from "next/navigation";
+import { IssueStatus } from "@/db/schema";
+import type { IssueInput } from "@/lib/validations/issue";
 import { trpc } from "@/trpc/client";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import type {
-  GetIssueInput,
-  AddIssueInput,
-  UpdateIssueInput,
-  DeleteIssueInput
-} from "@/lib/validations/issue";
 
 export const useIssues = () => {
   const issues = trpc.issues.getAll.useQuery();
@@ -15,7 +11,7 @@ export const useIssues = () => {
   const deleteIssueMutation = trpc.issues.delete.useMutation();
   const router = useRouter();
 
-  const getIssueById = ({ id }: GetIssueInput) => {
+  const getIssueById = (id: number) => {
     try {
       const issue = trpc.issues.getById.useQuery({ id });
       return issue;
@@ -25,11 +21,12 @@ export const useIssues = () => {
     }
   };
 
-  const addIssue = async (values: AddIssueInput) => {
+  const addIssue = async (values: IssueInput) => {
     try {
       await addIssueMutation.mutateAsync({
         title: values.title,
         description: values.description,
+        status: IssueStatus.OPEN, // New issues default to OPEN status
         priority: values.priority
       });
       toast.success("Issue created successfully!");
@@ -40,7 +37,7 @@ export const useIssues = () => {
     }
   };
 
-  const updateIssue = async (values: UpdateIssueInput) => {
+  const updateIssue = async (values: { id: number } & IssueInput) => {
     try {
       await updateIssueMutation.mutateAsync({
         id: values.id,
@@ -57,7 +54,7 @@ export const useIssues = () => {
     }
   };
 
-  const deleteIssue = async ({ id }: DeleteIssueInput) => {
+  const deleteIssue = async (id: number) => {
     try {
       await deleteIssueMutation.mutateAsync({ id });
       toast.success("Issue deleted successfully!");
