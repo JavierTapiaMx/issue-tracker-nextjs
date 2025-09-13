@@ -18,9 +18,9 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { IssuePriorities } from "@/db/schema";
+import { IssuePriorities, IssueStatus } from "@/db/schema";
 import { useIssues } from "@/hooks/useIssues";
-import { addIssueSchema, type AddIssueInput } from "@/lib/validations/issue";
+import { IssueInput, issueSchema } from "@/lib/validations/issue";
 import { Issue } from "@/types/Issue";
 import { zodResolver } from "@hookform/resolvers/zod";
 import "easymde/dist/easymde.min.css";
@@ -38,13 +38,14 @@ interface Props {
 }
 
 const IssueForm = ({ issue }: Props) => {
-  const { addIssue, isPending: isSubmitting } = useIssues();
+  const { addIssue, updateIssue, isPending: isSubmitting } = useIssues();
 
-  const form = useForm<AddIssueInput>({
-    resolver: zodResolver(addIssueSchema),
+  const form = useForm<IssueInput>({
+    resolver: zodResolver(issueSchema),
     defaultValues: {
       title: issue?.title || "",
       description: issue?.description || "",
+      status: issue?.status || IssueStatus.OPEN,
       priority: issue?.priority || IssuePriorities.LOW
     }
   });
@@ -61,7 +62,10 @@ const IssueForm = ({ issue }: Props) => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(
-              async (values) => await addIssue(values)
+              issue
+                ? async (values) =>
+                    await updateIssue({ id: issue.id, ...values })
+                : async (values) => await addIssue(values)
             )}
             className="w-full max-w-xl space-y-3"
           >
