@@ -59,7 +59,10 @@ const IssuesPage = async () => {
                 </Link>
               </Button>
               <Button asChild>
-                <Link href="/issues/new">Create Issue Anyway</Link>
+                <Link href="/issues/new">
+                  <FaRegPlusSquare className="h-4 w-4" />
+                  Create Issue Anyway
+                </Link>
               </Button>
             </div>
           </div>
