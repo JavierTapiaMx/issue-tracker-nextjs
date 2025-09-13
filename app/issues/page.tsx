@@ -1,7 +1,8 @@
 import { trpc } from "@/trpc/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, RefreshCw } from "lucide-react";
+import { FaRegPlusSquare } from "react-icons/fa";
+import { SlRefresh } from "react-icons/sl";
 
 import IssuesTable from "@/components/IssuesTable";
 // import delay from "delay";
@@ -38,7 +39,7 @@ const IssuesPage = async () => {
           </div>
           <Button asChild>
             <Link href="/issues/new" className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
+              <FaRegPlusSquare className="h-4 w-4" />
               New Issue
             </Link>
           </Button>
@@ -53,7 +54,7 @@ const IssuesPage = async () => {
             <div className="flex justify-center gap-2">
               <Button asChild variant="outline">
                 <Link href="/issues" className="flex items-center gap-2">
-                  <RefreshCw className="h-4 w-4" />
+                  <SlRefresh className="h-4 w-4" />
                   Try Again
                 </Link>
               </Button>
@@ -79,7 +80,7 @@ const IssuesPage = async () => {
         </div>
         <Button asChild>
           <Link href="/issues/new" className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
+            <FaRegPlusSquare className="h-4 w-4" />
             New Issue
           </Link>
         </Button>
@@ -97,7 +98,7 @@ const IssuesPage = async () => {
             </p>
             <Button asChild>
               <Link href="/issues/new" className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
+                <FaRegPlusSquare className="h-4 w-4" />
                 Create your first issue
               </Link>
             </Button>
