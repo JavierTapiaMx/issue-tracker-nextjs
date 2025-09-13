@@ -1,26 +1,16 @@
-import IssuePriorityBadge from "@/components/IssuePriorityBadge";
-import IssueStatusBadge from "@/components/IssueStatusBadge";
+import IssueForm from "@/components/IssueForm";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle
-} from "@/components/ui/card";
 import { trpc } from "@/trpc/server";
 import { Issue } from "@/types/Issue";
+import { RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { RxPencil2 } from "react-icons/rx";
-import { SlRefresh } from "react-icons/sl";
-import ReactMarkdown from "react-markdown";
-// import delay from "delay";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-const IssueDetailsPage = async ({ params }: Props) => {
+const EditIssuePage = async ({ params }: Props) => {
   let issue: Issue | null = null;
   let errorMessage: string | null = null;
 
@@ -50,7 +40,7 @@ const IssueDetailsPage = async ({ params }: Props) => {
   if (errorMessage) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+        <div className="mb-6 flex flex-row items-center justify-between">
           <div>
             <h1 className="text-foreground text-3xl font-bold">
               Issue Details
@@ -76,7 +66,7 @@ const IssueDetailsPage = async ({ params }: Props) => {
                   href={`/issues/${id}`}
                   className="flex items-center gap-2"
                 >
-                  <SlRefresh className="h-4 w-4" />
+                  <RefreshCw className="h-4 w-4" />
                   Try Again
                 </Link>
               </Button>
@@ -95,46 +85,7 @@ const IssueDetailsPage = async ({ params }: Props) => {
     notFound();
   }
 
-  // Render success state
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-foreground text-3xl font-bold">{issue.title}</h1>
-          <div className="mt-2 flex flex-row items-center gap-4">
-            <IssueStatusBadge status={issue.status} />
-            <IssuePriorityBadge priority={issue.priority} />
-            <p className="text-muted-foreground text-sm">
-              Created{": "}
-              {issue.createdAt.toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "long",
-                day: "numeric"
-              })}
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-row gap-2">
-          <Button>
-            <RxPencil2 className="h-4 w-4" />
-            <Link href={`/issues/${id}/edit`}>Edit</Link>
-          </Button>
-          <Button variant="outline">
-            <Link href="/issues">Back to Issues</Link>
-          </Button>
-        </div>
-      </div>
-
-      <Card>
-        <CardContent className="pt-4">
-          <CardTitle className="text-muted mb-4 text-sm">Description</CardTitle>
-          <CardDescription className="prose max-w-none">
-            <ReactMarkdown>{issue.description}</ReactMarkdown>
-          </CardDescription>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  return <IssueForm issue={issue} />;
 };
 
-export default IssueDetailsPage;
+export default EditIssuePage;

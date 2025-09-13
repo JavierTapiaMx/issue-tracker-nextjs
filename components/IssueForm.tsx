@@ -1,16 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { addIssueSchema, type AddIssueInput } from "@/lib/validations/issue";
-import { useIssues } from "@/hooks/useIssues";
-import { IssuePriorities } from "@/db/schema";
-
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import {
   Form,
   FormControl,
@@ -19,6 +9,7 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -26,21 +17,35 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { IssuePriorities } from "@/db/schema";
+import { useIssues } from "@/hooks/useIssues";
+import { addIssueSchema, type AddIssueInput } from "@/lib/validations/issue";
+import { Issue } from "@/types/Issue";
+import { zodResolver } from "@hookform/resolvers/zod";
 import "easymde/dist/easymde.min.css";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { HiOutlineSave } from "react-icons/hi";
 
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false
 });
 
-const IssueForm = () => {
+interface Props {
+  issue?: Issue;
+}
+
+const IssueForm = ({ issue }: Props) => {
   const { addIssue, isPending: isSubmitting } = useIssues();
 
   const form = useForm<AddIssueInput>({
     resolver: zodResolver(addIssueSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      priority: IssuePriorities.LOW
+      title: issue?.title || "",
+      description: issue?.description || "",
+      priority: issue?.priority || IssuePriorities.LOW
     }
   });
 
@@ -50,7 +55,9 @@ const IssueForm = () => {
   return (
     <div className="flex flex-row justify-center">
       <div className="container flex flex-col items-center px-4 py-8">
-        <h1 className="mb-4 text-2xl font-bold">New Issue</h1>
+        <h1 className="mb-4 text-2xl font-bold">
+          {issue ? "Edit Issue" : "New Issue"}
+        </h1>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(
@@ -111,16 +118,20 @@ const IssueForm = () => {
             />
             <div className="mt-4 flex flex-row items-center gap-2">
               <Button type="submit" disabled={isSubmitting}>
+                <HiOutlineSave className="h-4 w-4" />
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
-                    <Spinner /> Submitting...
+                    <Spinner /> {issue ? "Updating..." : "Submitting..."}
                   </span>
                 ) : (
-                  "Submit New Issue"
+                  <>{issue ? "Update Issue" : "Submit New Issue"}</>
                 )}
               </Button>
               <Button variant="outline">
-                <Link className="text-muted-foreground text-sm" href="/issues">
+                <Link
+                  className="text-muted-foreground text-sm"
+                  href={issue ? `/issues/${issue.id}` : "/issues"}
+                >
                   Cancel
                 </Link>
               </Button>
