@@ -24,14 +24,10 @@ import { IssueInput, issueSchema } from "@/lib/validations/issue";
 import { Issue } from "@/types/Issue";
 import { zodResolver } from "@hookform/resolvers/zod";
 import "easymde/dist/easymde.min.css";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { HiOutlineSave } from "react-icons/hi";
-
-const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false
-});
+import SimpleMDE from "react-simplemde-editor";
 
 interface Props {
   issue?: Issue;

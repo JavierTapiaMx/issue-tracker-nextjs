@@ -5,21 +5,34 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const useIssues = () => {
+  const utils = trpc.useUtils();
   const issues = trpc.issues.getAll.useQuery();
-  const addIssueMutation = trpc.issues.add.useMutation();
-  const updateIssueMutation = trpc.issues.update.useMutation();
-  const deleteIssueMutation = trpc.issues.delete.useMutation();
+  const addIssueMutation = trpc.issues.add.useMutation({
+    onSuccess: () => {
+      // Invalidate all issues queries after successful add
+      utils.issues.getAll.invalidate();
+    }
+  });
+  const updateIssueMutation = trpc.issues.update.useMutation({
+    onSuccess: (_, variables) => {
+      // Invalidate both getAll and getById queries after successful update
+      utils.issues.getAll.invalidate();
+      utils.issues.getById.invalidate({ id: variables.id });
+
+      // Force refetch for better consistency
+      utils.issues.getById.refetch({ id: variables.id });
+    }
+  });
+  const deleteIssueMutation = trpc.issues.delete.useMutation({
+    onSuccess: () => {
+      // Invalidate all issues queries after successful delete
+      utils.issues.getAll.invalidate();
+    }
+  });
   const router = useRouter();
 
-  const getIssueById = (id: number) => {
-    try {
-      const issue = trpc.issues.getById.useQuery({ id });
-      return issue;
-    } catch (error) {
-      console.error("Error fetching issue:", error);
-      toast.error("An error occurred while fetching the issue.");
-    }
-  };
+  // Removed getIssueById function since it violates Rules of Hooks
+  // Components should use trpc.issues.getById.useQuery directly
 
   const addIssue = async (values: IssueInput) => {
     try {
@@ -67,7 +80,6 @@ export const useIssues = () => {
 
   return {
     issues: issues.data ?? [],
-    getIssueById,
     addIssue,
     updateIssue,
     deleteIssue,

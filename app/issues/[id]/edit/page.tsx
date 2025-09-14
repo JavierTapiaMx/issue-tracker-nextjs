@@ -1,43 +1,80 @@
-import IssueForm from "@/components/IssueForm";
+"use client";
+
+import IssueFormSkeleton from "@/components/IssueFormSkeleton";
 import { Button } from "@/components/ui/button";
-import { trpc } from "@/trpc/server";
-import { Issue } from "@/types/Issue";
 import { RefreshCw } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { trpc } from "@/trpc/client";
+import { useEffect, useState } from "react";
+
+//TODO: Fix this error about loading the IssueForm in lazy mode (CSR), but data is being rendered now SSR
+// import IssueForm from "@/components/IssueForm";
+const IssueForm = dynamic(() => import("@/components/IssueForm"), {
+  ssr: false,
+  loading: () => <IssueFormSkeleton />
+});
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-const EditIssuePage = async ({ params }: Props) => {
-  let issue: Issue | null = null;
-  let errorMessage: string | null = null;
+const EditIssuePage = ({ params }: Props) => {
+  const [issueId, setIssueId] = useState<number | null>(null);
+  const [isParamsLoaded, setIsParamsLoaded] = useState(false);
 
-  const { id } = await params;
-  const issueId = parseInt(id, 10);
+  useEffect(() => {
+    const loadParams = async () => {
+      try {
+        const { id } = await params;
+        const parsedId = parseInt(id, 10);
 
-  // await delay(2000); // Simulate network delay for demonstration
+        if (isNaN(parsedId) || parsedId <= 0) {
+          notFound();
+        }
 
-  if (isNaN(issueId) || issueId <= 0) {
-    notFound();
-  }
+        setIssueId(parsedId);
+      } catch (error) {
+        console.error("Error loading params:", error);
+        notFound();
+      } finally {
+        setIsParamsLoaded(true);
+      }
+    };
 
-  try {
-    issue = await trpc.issues.getById({ id: issueId });
-  } catch (error) {
-    console.error("Error fetching issue:", error);
+    loadParams();
+  }, [params]);
 
-    // Extract meaningful error message from tRPC error
-    if (error && typeof error === "object" && "message" in error) {
-      errorMessage = error.message as string;
-    } else {
-      errorMessage = "An unexpected error occurred while loading the issue";
+  // IMPORTANT: Call tRPC query hook directly, but with conditional enabled
+  // This ensures the hook is always called in the same order
+  const issueQuery = trpc.issues.getById.useQuery(
+    { id: issueId || 0 }, // Use fallback ID
+    {
+      enabled: issueId !== null && isParamsLoaded, // Only enable when we have a valid ID
+      retry: false, // Don't retry on the fallback ID
+      refetchOnMount: true, // Always refetch when component mounts
+      refetchOnWindowFocus: true, // Refetch when window gains focus
+      staleTime: 0 // Consider data immediately stale to ensure fresh data
     }
+  );
+
+  // Early return AFTER hook calls
+  if (!isParamsLoaded || issueId === null) {
+    return <IssueFormSkeleton />;
   }
 
-  // Render error state
-  if (errorMessage) {
+  // Handle loading state from the query
+  if (issueQuery?.isLoading) {
+    return <IssueFormSkeleton />;
+  }
+
+  // Handle error state from the query
+  if (issueQuery?.error) {
+    const errorMessage =
+      issueQuery.error.message ||
+      "An unexpected error occurred while loading the issue";
+
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6 flex flex-row items-center justify-between">
@@ -63,7 +100,7 @@ const EditIssuePage = async ({ params }: Props) => {
             <div className="flex justify-center gap-2">
               <Button asChild variant="outline">
                 <Link
-                  href={`/issues/${id}`}
+                  href={`/issues/${issueId}`}
                   className="flex items-center gap-2"
                 >
                   <RefreshCw className="h-4 w-4" />
@@ -79,6 +116,9 @@ const EditIssuePage = async ({ params }: Props) => {
       </div>
     );
   }
+
+  // Get the actual issue data from the query
+  const issue = issueQuery?.data;
 
   // Handle case where issue is not found (after successful API call)
   if (!issue) {
