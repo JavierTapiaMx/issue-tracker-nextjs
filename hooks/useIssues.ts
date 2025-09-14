@@ -14,13 +14,18 @@ export const useIssues = () => {
     }
   });
   const updateIssueMutation = trpc.issues.update.useMutation({
-    onSuccess: (_, variables) => {
-      // Invalidate both getAll and getById queries after successful update
-      utils.issues.getAll.invalidate();
-      utils.issues.getById.invalidate({ id: variables.id });
+    onSuccess: async (_, variables) => {
+      // Multiple cache invalidation strategies for immediate updates
 
-      // Force refetch for better consistency
-      utils.issues.getById.refetch({ id: variables.id });
+      // 1. Invalidate both getAll and getById queries
+      await utils.issues.getAll.invalidate();
+      await utils.issues.getById.invalidate({ id: variables.id });
+
+      // 2. Force immediate refetch of the specific issue
+      await utils.issues.getById.refetch({ id: variables.id });
+
+      // 3. Reset/remove specific query from cache
+      utils.issues.getById.reset({ id: variables.id });
     }
   });
   const deleteIssueMutation = trpc.issues.delete.useMutation({

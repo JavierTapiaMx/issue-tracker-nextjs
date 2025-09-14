@@ -53,9 +53,11 @@ const EditIssuePage = ({ params }: Props) => {
     {
       enabled: issueId !== null && isParamsLoaded, // Only enable when we have a valid ID
       retry: false, // Don't retry on the fallback ID
-      refetchOnMount: true, // Always refetch when component mounts
+      refetchOnMount: "always", // Always refetch when component mounts (more aggressive)
       refetchOnWindowFocus: true, // Refetch when window gains focus
-      staleTime: 0 // Consider data immediately stale to ensure fresh data
+      refetchOnReconnect: true, // Refetch when reconnecting
+      staleTime: 0, // Consider data immediately stale
+      gcTime: 0 // Don't keep in cache - always fetch fresh (newer React Query)
     }
   );
 
