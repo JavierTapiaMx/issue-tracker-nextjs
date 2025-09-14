@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 
-const LoadingIssueDetailsPage = async () => {
+const LoadingIssueDetailsPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <Skeleton className="mb-4 h-8 w-1/4" />
