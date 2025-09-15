@@ -99,11 +99,11 @@ const EditIssuePage = ({ params }: Props) => {
             <p className="text-muted-foreground mb-4">{errorMessage}</p>
             <div className="flex justify-center gap-2">
               <Button variant="outline">
+                <RefreshCw className="h-4 w-4" />
                 <Link
                   href={`/issues/${issueId}`}
                   className="flex items-center gap-2"
                 >
-                  <RefreshCw className="h-4 w-4" />
                   Try Again
                 </Link>
               </Button>
