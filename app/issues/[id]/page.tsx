@@ -1,19 +1,12 @@
-import IssuePriorityBadge from "@/components/Issues/IssuePriorityBadge";
-import IssueStatusBadge from "@/components/Issues/IssueStatusBadge";
+import DeleteIssueButton from "@/components/Issues/DeleteIssueButton";
+import EditIssueButton from "@/components/Issues/EditIssueButton";
+import IssueDetails from "@/components/Issues/IssueDetails";
+import IssueDetailsError from "@/components/Issues/IssueDetailsError";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle
-} from "@/components/ui/card";
 import { trpc } from "@/trpc/server";
 import { Issue } from "@/types/Issue";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { RxPencil2 } from "react-icons/rx";
-import { SlRefresh } from "react-icons/sl";
-import ReactMarkdown from "react-markdown";
 // import delay from "delay";
 
 interface Props {
@@ -48,46 +41,7 @@ const IssueDetailsPage = async ({ params }: Props) => {
 
   // Render error state
   if (errorMessage) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-foreground text-3xl font-bold">
-              Issue Details
-            </h1>
-            <p className="text-muted-foreground">
-              View and manage issue information
-            </p>
-          </div>
-          <Button variant="outline">
-            <Link href="/issues">Back to Issues</Link>
-          </Button>
-        </div>
-
-        <div className="border-destructive/20 rounded-lg border-2 border-dashed py-12 text-center">
-          <div className="mx-auto max-w-md">
-            <h3 className="text-destructive mb-2 text-lg font-semibold">
-              Unable to load issue
-            </h3>
-            <p className="text-muted-foreground mb-4">{errorMessage}</p>
-            <div className="flex justify-center gap-2">
-              <Button variant="outline">
-                <Link
-                  href={`/issues/${id}`}
-                  className="flex items-center gap-2"
-                >
-                  <SlRefresh className="h-4 w-4" />
-                  Try Again
-                </Link>
-              </Button>
-              <Button>
-                <Link href="/issues">Back to Issues</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <IssueDetailsError issueId={issueId} errorMessage={errorMessage} />;
   }
 
   // Handle case where issue is not found (after successful API call)
@@ -99,36 +53,12 @@ const IssueDetailsPage = async ({ params }: Props) => {
   return (
     <div className="container mx-auto grid gap-4 px-4 py-8 lg:grid-cols-5">
       <div className="mb-6 flex flex-col gap-2 lg:col-span-4">
-        <h1 className="text-foreground text-3xl font-bold">{issue.title}</h1>
-        <div className="mb-4 flex flex-row items-center gap-4">
-          <IssueStatusBadge status={issue.status} />
-          <IssuePriorityBadge priority={issue.priority} />
-          <p className="text-muted-foreground text-sm">
-            Created{": "}
-            {issue.createdAt.toLocaleDateString(undefined, {
-              year: "numeric",
-              month: "long",
-              day: "numeric"
-            })}
-          </p>
-        </div>
-        <Card>
-          <CardContent className="pt-4">
-            <CardTitle className="text-muted mb-4 text-sm">
-              Description
-            </CardTitle>
-            <CardDescription className="prose max-w-none">
-              <ReactMarkdown>{issue.description}</ReactMarkdown>
-            </CardDescription>
-          </CardContent>
-        </Card>
+        <IssueDetails issue={issue} />
       </div>
 
       <div className="flex flex-row gap-2 lg:flex-col">
-        <Button>
-          <RxPencil2 className="h-4 w-4" />
-          <Link href={`/issues/${id}/edit`}>Edit</Link>
-        </Button>
+        <EditIssueButton issueId={issue.id} />
+        <DeleteIssueButton issueId={issue.id} />
         <Button variant="outline">
           <Link href="/issues">Back to Issues</Link>
         </Button>
