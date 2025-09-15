@@ -3,26 +3,28 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const LoadingIssueDetailsPage = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-1 flex-col gap-2">
-          <Skeleton className="h-8 w-1/2" />
-          <div className="mt-2 flex flex-row items-center gap-4">
-            <Skeleton className="h-4 w-1/12" />
-            <Skeleton className="h-4 w-1/12" />
-            <Skeleton className="h-4 w-1/4" />
-          </div>
+    <div className="container mx-auto grid gap-4 px-4 py-8 lg:grid-cols-5">
+      <div className="mb-6 flex flex-col gap-4 lg:col-span-4">
+        <Skeleton className="h-8 w-2/3" />
+        <div className="mb-4 flex flex-row items-center gap-4">
+          <Skeleton className="h-4 w-1/12" />
+          <Skeleton className="h-4 w-1/12" />
+          <Skeleton className="h-4 w-1/3" />
         </div>
+        <Card className="h-[400px] w-full">
+          <CardContent>
+            <Skeleton className="mt-8 mb-7 h-4 w-1/8" />
+            <Skeleton className="mb-4 h-4 w-full" />
+            <Skeleton className="mb-4 h-4 w-full" />
+            <Skeleton className="mb-4 h-4 w-1/2" />
+          </CardContent>
+        </Card>
       </div>
 
-      <Card className="h-[400px] w-full">
-        <CardContent>
-          <Skeleton className="mt-8 mb-7 h-4 w-1/8" />
-          <Skeleton className="mb-4 h-4 w-full" />
-          <Skeleton className="mb-4 h-4 w-full" />
-          <Skeleton className="mb-4 h-4 w-1/2" />
-        </CardContent>
-      </Card>
+      <div className="flex flex-row gap-2 lg:flex-col">
+        <Skeleton className="h-8 w-1/6 lg:w-full" />
+        <Skeleton className="h-8 w-1/4 lg:w-full" />
+      </div>
     </div>
   );
 };

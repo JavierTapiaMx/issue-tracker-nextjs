@@ -97,42 +97,42 @@ const IssueDetailsPage = async ({ params }: Props) => {
 
   // Render success state
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-foreground text-3xl font-bold">{issue.title}</h1>
-          <div className="mt-2 flex flex-row items-center gap-4">
-            <IssueStatusBadge status={issue.status} />
-            <IssuePriorityBadge priority={issue.priority} />
-            <p className="text-muted-foreground text-sm">
-              Created{": "}
-              {issue.createdAt.toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "long",
-                day: "numeric"
-              })}
-            </p>
-          </div>
+    <div className="container mx-auto grid gap-4 px-4 py-8 lg:grid-cols-5">
+      <div className="mb-6 flex flex-col gap-2 lg:col-span-4">
+        <h1 className="text-foreground text-3xl font-bold">{issue.title}</h1>
+        <div className="mb-4 flex flex-row items-center gap-4">
+          <IssueStatusBadge status={issue.status} />
+          <IssuePriorityBadge priority={issue.priority} />
+          <p className="text-muted-foreground text-sm">
+            Created{": "}
+            {issue.createdAt.toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "long",
+              day: "numeric"
+            })}
+          </p>
         </div>
-        <div className="flex flex-row gap-2">
-          <Button>
-            <RxPencil2 className="h-4 w-4" />
-            <Link href={`/issues/${id}/edit`}>Edit</Link>
-          </Button>
-          <Button variant="outline">
-            <Link href="/issues">Back to Issues</Link>
-          </Button>
-        </div>
+        <Card>
+          <CardContent className="pt-4">
+            <CardTitle className="text-muted mb-4 text-sm">
+              Description
+            </CardTitle>
+            <CardDescription className="prose max-w-none">
+              <ReactMarkdown>{issue.description}</ReactMarkdown>
+            </CardDescription>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card>
-        <CardContent className="pt-4">
-          <CardTitle className="text-muted mb-4 text-sm">Description</CardTitle>
-          <CardDescription className="prose max-w-none">
-            <ReactMarkdown>{issue.description}</ReactMarkdown>
-          </CardDescription>
-        </CardContent>
-      </Card>
+      <div className="flex flex-row gap-2 lg:flex-col">
+        <Button>
+          <RxPencil2 className="h-4 w-4" />
+          <Link href={`/issues/${id}/edit`}>Edit</Link>
+        </Button>
+        <Button variant="outline">
+          <Link href="/issues">Back to Issues</Link>
+        </Button>
+      </div>
     </div>
   );
 };
