@@ -88,7 +88,7 @@ const EditIssuePage = ({ params }: Props) => {
               View and manage issue information
             </p>
           </div>
-          <Button asChild variant="outline">
+          <Button variant="outline">
             <Link href="/issues">Back to Issues</Link>
           </Button>
         </div>
@@ -100,7 +100,7 @@ const EditIssuePage = ({ params }: Props) => {
             </h3>
             <p className="text-muted-foreground mb-4">{errorMessage}</p>
             <div className="flex justify-center gap-2">
-              <Button asChild variant="outline">
+              <Button variant="outline">
                 <Link
                   href={`/issues/${issueId}`}
                   className="flex items-center gap-2"
@@ -109,7 +109,7 @@ const EditIssuePage = ({ params }: Props) => {
                   Try Again
                 </Link>
               </Button>
-              <Button asChild>
+              <Button>
                 <Link href="/issues">Back to Issues</Link>
               </Button>
             </div>

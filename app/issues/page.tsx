@@ -37,7 +37,7 @@ const IssuesPage = async () => {
               Manage and track your project issues
             </p>
           </div>
-          <Button asChild>
+          <Button>
             <Link href="/issues/new" className="flex items-center gap-2">
               <FaRegPlusSquare className="h-4 w-4" />
               New Issue
@@ -52,13 +52,13 @@ const IssuesPage = async () => {
             </h3>
             <p className="text-muted-foreground mb-4">{errorMessage}</p>
             <div className="flex justify-center gap-2">
-              <Button asChild variant="outline">
+              <Button variant="outline">
                 <Link href="/issues" className="flex items-center gap-2">
                   <SlRefresh className="h-4 w-4" />
                   Try Again
                 </Link>
               </Button>
-              <Button asChild>
+              <Button>
                 <Link href="/issues/new">
                   <FaRegPlusSquare className="h-4 w-4" />
                   Create Issue Anyway
@@ -81,7 +81,7 @@ const IssuesPage = async () => {
             Manage and track your project issues
           </p>
         </div>
-        <Button asChild>
+        <Button>
           <Link href="/issues/new" className="flex items-center gap-2">
             <FaRegPlusSquare className="h-4 w-4" />
             New Issue
@@ -99,7 +99,7 @@ const IssuesPage = async () => {
               Get started by creating your first issue to track bugs, features,
               or tasks.
             </p>
-            <Button asChild>
+            <Button>
               <Link href="/issues/new" className="flex items-center gap-2">
                 <FaRegPlusSquare className="h-4 w-4" />
                 Create your first issue

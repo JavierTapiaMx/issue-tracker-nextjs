@@ -117,7 +117,11 @@ const IssueForm = ({ issue }: Props) => {
               )}
             />
             <div className="mt-4 flex flex-row items-center gap-2">
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="cursor-pointer"
+              >
                 <HiOutlineSave className="h-4 w-4" />
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
