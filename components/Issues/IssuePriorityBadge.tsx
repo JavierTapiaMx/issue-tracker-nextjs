@@ -1,5 +1,5 @@
 import { IssuePriorities } from "@/db/schema";
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 
 const priorityMap: Record<IssuePriorities, { text: string; style: string }> = {
   low: {

@@ -1,11 +1,10 @@
-import { trpc } from "@/trpc/server";
+import IssuesTable from "@/components/Issues/IssuesTable";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/trpc/server";
 import Link from "next/link";
 import { FaRegPlusSquare } from "react-icons/fa";
 import { SlRefresh } from "react-icons/sl";
-
-import IssuesTable from "@/components/IssuesTable";
-// import delay from "delay";
+// import delay from "del@/components/Issues/IssuesTable
 
 const IssuesPage = async () => {
   let issues;

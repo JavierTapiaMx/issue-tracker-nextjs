@@ -1,6 +1,6 @@
 "use client";
 
-import IssueFormSkeleton from "@/components/IssueFormSkeleton";
+import IssueFormSkeleton from "@/components/Issues/IssueFormSkeleton";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -9,9 +9,7 @@ import { notFound } from "next/navigation";
 import { trpc } from "@/trpc/client";
 import { useEffect, useState } from "react";
 
-//TODO: Fix this error about loading the IssueForm in lazy mode (CSR), but data is being rendered now SSR
-// import IssueForm from "@/components/IssueForm";
-const IssueForm = dynamic(() => import("@/components/IssueForm"), {
+const IssueForm = dynamic(() => import("@/components/Issues/IssueForm"), {
   ssr: false,
   loading: () => <IssueFormSkeleton />
 });

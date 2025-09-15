@@ -1,5 +1,5 @@
-import IssuePriorityBadge from "@/components/IssuePriorityBadge";
-import IssueStatusBadge from "@/components/IssueStatusBadge";
+import IssuePriorityBadge from "@/components/Issues/IssuePriorityBadge";
+import IssueStatusBadge from "@/components/Issues/IssueStatusBadge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
