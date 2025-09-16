@@ -5,17 +5,27 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { createClerkClient, User } from "@clerk/backend";
 
-const AssigneeSelect = () => {
+const AssigneeSelect = async () => {
+  const clerkClient = createClerkClient({
+    secretKey: process.env.CLERK_SECRET_KEY
+  });
+
+  const { data: users } = await clerkClient.users.getUserList();
+
   return (
     <Select>
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Assign..." />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="1">User 1</SelectItem>
-        <SelectItem value="2">User 2</SelectItem>
-        <SelectItem value="3">User 3</SelectItem>
+        {users.map((user: User) => (
+          <SelectItem key={user.id} value={user.id}>
+            {user.firstName} {user.lastName} (
+            {user.emailAddresses[0]?.emailAddress})
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );
