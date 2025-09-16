@@ -1,10 +1,5 @@
 "use client";
 
-import { Toaster } from "@/components/ui/sonner";
-import { TRPCProvider } from "@/trpc/client";
-import { ClerkProvider } from "@clerk/nextjs";
-import { shadcn } from "@clerk/themes";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
@@ -49,39 +44,13 @@ const createQueryClient = () =>
     }
   });
 
-// Configuration objects extracted for better performance and readability
-const clerkAppearance = {
-  baseTheme: shadcn
-} as const;
-
-const toasterConfig = {
-  position: "bottom-center" as const,
-  toastOptions: {
-    duration: 4000
-  }
-} as const;
-
-const Providers = ({
-  children,
-  ...props
-}: { children: React.ReactNode } & React.ComponentProps<
-  typeof NextThemesProvider
->) => {
+export function QueryProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => createQueryClient());
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ClerkProvider appearance={clerkAppearance}>
-        <NextThemesProvider {...props}>
-          <TRPCProvider>
-            {children}
-            <ReactQueryDevtools />
-            <Toaster {...toasterConfig} />
-          </TRPCProvider>
-        </NextThemesProvider>
-      </ClerkProvider>
+      {children}
+      {process.env.NODE_ENV === "development" && <ReactQueryDevtools />}
     </QueryClientProvider>
   );
-};
-
-export default Providers;
+}
