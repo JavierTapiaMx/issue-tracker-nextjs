@@ -1,5 +1,5 @@
 import { IssueStatus } from "@/db/schema";
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 
 const statusMap: Record<IssueStatus, { text: string; style: string }> = {
   open: {

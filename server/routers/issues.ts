@@ -1,14 +1,10 @@
-import { eq } from "drizzle-orm";
-import { TRPCError } from "@trpc/server";
 import { db } from "@/db/drizzle";
 import { issuesTable } from "@/db/schema";
-import {
-  getIssueSchema,
-  addIssueSchema,
-  updateIssueSchema,
-  deleteIssueSchema
-} from "@/lib/validations/issue";
+import { issueSchema } from "@/lib/validations/issue";
 import { procedure, router } from "@/server/trpc";
+import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
+import z from "zod";
 
 export const issuesRouter = router({
   getAll: procedure.query(async () => {
@@ -41,7 +37,7 @@ export const issuesRouter = router({
       });
     }
   }),
-  getById: procedure.input(getIssueSchema).query(async (opts) => {
+  getById: procedure.input(z.object({ id: z.number() })).query(async (opts) => {
     const { id } = opts.input;
     try {
       const result = await db
@@ -70,10 +66,10 @@ export const issuesRouter = router({
       });
     }
   }),
-  add: procedure.input(addIssueSchema).mutation(async (opts) => {
-    const { title, description } = opts.input;
+  add: procedure.input(issueSchema).mutation(async (opts) => {
+    const { title, description, priority } = opts.input;
     try {
-      await db.insert(issuesTable).values({ title, description });
+      await db.insert(issuesTable).values({ title, description, priority });
       return { success: true };
     } catch (error) {
       console.error("Database error when creating issue:", error);
@@ -94,36 +90,40 @@ export const issuesRouter = router({
       });
     }
   }),
-  update: procedure.input(updateIssueSchema).mutation(async (opts) => {
-    const { id, title, description, status, priority } = opts.input;
-    try {
-      await db
-        .update(issuesTable)
-        .set({ title, description, status, priority })
-        .where(eq(issuesTable.id, id));
+  update: procedure
+    .input(z.object({ id: z.number(), ...issueSchema.shape }))
+    .mutation(async (opts) => {
+      const { id, title, description, status, priority } = opts.input;
+      try {
+        await db
+          .update(issuesTable)
+          .set({ title, description, status, priority })
+          .where(eq(issuesTable.id, id));
 
-      return { success: true };
-    } catch (error) {
-      console.error("Database error when updating issue:", error);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to update issue",
-        cause: error
-      });
-    }
-  }),
-  delete: procedure.input(deleteIssueSchema).mutation(async (opts) => {
-    const { id } = opts.input;
-    try {
-      await db.delete(issuesTable).where(eq(issuesTable.id, id));
-      return { success: true };
-    } catch (error) {
-      console.error("Database error when deleting issue:", error);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to delete issue",
-        cause: error
-      });
-    }
-  })
+        return { success: true };
+      } catch (error) {
+        console.error("Database error when updating issue:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update issue",
+          cause: error
+        });
+      }
+    }),
+  delete: procedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async (opts) => {
+      const { id } = opts.input;
+      try {
+        await db.delete(issuesTable).where(eq(issuesTable.id, id));
+        return { success: true };
+      } catch (error) {
+        console.error("Database error when deleting issue:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete issue",
+          cause: error
+        });
+      }
+    })
 });

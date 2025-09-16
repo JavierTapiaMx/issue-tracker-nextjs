@@ -1,10 +1,11 @@
-import { trpc } from "@/trpc/server";
+import IssuesError from "@/components/Issues/IssuesError";
+import IssuesTable from "@/components/Issues/IssuesTable";
+import NoIssues from "@/components/Issues/NoIssues";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/trpc/server";
 import Link from "next/link";
-import { Plus, RefreshCw } from "lucide-react";
-
-import IssuesTable from "@/components/IssuesTable";
-// import delay from "delay";
+import { FaRegPlusSquare } from "react-icons/fa";
+// import delay from "del@/components/Issues/IssuesTable
 
 const IssuesPage = async () => {
   let issues;
@@ -27,44 +28,7 @@ const IssuesPage = async () => {
 
   // Render error state
   if (errorMessage) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex flex-row items-center justify-between">
-          <div>
-            <h1 className="text-foreground text-3xl font-bold">Issues</h1>
-            <p className="text-muted-foreground">
-              Manage and track your project issues
-            </p>
-          </div>
-          <Button asChild>
-            <Link href="/issues/new" className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              New Issue
-            </Link>
-          </Button>
-        </div>
-
-        <div className="border-destructive/20 rounded-lg border-2 border-dashed py-12 text-center">
-          <div className="mx-auto max-w-md">
-            <h3 className="text-destructive mb-2 text-lg font-semibold">
-              Unable to load issues
-            </h3>
-            <p className="text-muted-foreground mb-4">{errorMessage}</p>
-            <div className="flex justify-center gap-2">
-              <Button asChild variant="outline">
-                <Link href="/issues" className="flex items-center gap-2">
-                  <RefreshCw className="h-4 w-4" />
-                  Try Again
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link href="/issues/new">Create Issue Anyway</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <IssuesError errorMessage={errorMessage} />;
   }
 
   // Render success state
@@ -77,32 +41,16 @@ const IssuesPage = async () => {
             Manage and track your project issues
           </p>
         </div>
-        <Button asChild>
+        <Button>
+          <FaRegPlusSquare className="h-4 w-4" />
           <Link href="/issues/new" className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
             New Issue
           </Link>
         </Button>
       </div>
 
       {issues && issues.length === 0 ? (
-        <div className="border-border rounded-lg border-2 border-dashed py-12 text-center">
-          <div className="mx-auto max-w-md">
-            <h3 className="text-foreground mb-2 text-lg font-semibold">
-              No issues yet
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              Get started by creating your first issue to track bugs, features,
-              or tasks.
-            </p>
-            <Button asChild>
-              <Link href="/issues/new" className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Create your first issue
-              </Link>
-            </Button>
-          </div>
-        </div>
+        <NoIssues />
       ) : issues ? (
         <IssuesTable issues={issues} />
       ) : null}

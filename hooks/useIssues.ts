@@ -1,35 +1,50 @@
-import { useRouter } from "next/navigation";
+import { IssueStatus } from "@/db/schema";
+import type { IssueInput } from "@/lib/validations/issue";
 import { trpc } from "@/trpc/client";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import type {
-  GetIssueInput,
-  AddIssueInput,
-  UpdateIssueInput,
-  DeleteIssueInput
-} from "@/lib/validations/issue";
 
 export const useIssues = () => {
+  const utils = trpc.useUtils();
   const issues = trpc.issues.getAll.useQuery();
-  const addIssueMutation = trpc.issues.add.useMutation();
-  const updateIssueMutation = trpc.issues.update.useMutation();
-  const deleteIssueMutation = trpc.issues.delete.useMutation();
+  const addIssueMutation = trpc.issues.add.useMutation({
+    onSuccess: () => {
+      // Invalidate all issues queries after successful add
+      utils.issues.getAll.invalidate();
+    }
+  });
+  const updateIssueMutation = trpc.issues.update.useMutation({
+    onSuccess: async (_, variables) => {
+      // Multiple cache invalidation strategies for immediate updates
+
+      // 1. Invalidate both getAll and getById queries
+      await utils.issues.getAll.invalidate();
+      await utils.issues.getById.invalidate({ id: variables.id });
+
+      // 2. Force immediate refetch of the specific issue
+      await utils.issues.getById.refetch({ id: variables.id });
+
+      // 3. Reset/remove specific query from cache
+      utils.issues.getById.reset({ id: variables.id });
+    }
+  });
+  const deleteIssueMutation = trpc.issues.delete.useMutation({
+    onSuccess: () => {
+      // Invalidate all issues queries after successful delete
+      utils.issues.getAll.invalidate();
+    }
+  });
   const router = useRouter();
 
-  const getIssueById = ({ id }: GetIssueInput) => {
-    try {
-      const issue = trpc.issues.getById.useQuery({ id });
-      return issue;
-    } catch (error) {
-      console.error("Error fetching issue:", error);
-      toast.error("An error occurred while fetching the issue.");
-    }
-  };
+  // Removed getIssueById function since it violates Rules of Hooks
+  // Components should use trpc.issues.getById.useQuery directly
 
-  const addIssue = async (values: AddIssueInput) => {
+  const addIssue = async (values: IssueInput) => {
     try {
       await addIssueMutation.mutateAsync({
         title: values.title,
         description: values.description,
+        status: IssueStatus.OPEN, // New issues default to OPEN status
         priority: values.priority
       });
       toast.success("Issue created successfully!");
@@ -40,7 +55,7 @@ export const useIssues = () => {
     }
   };
 
-  const updateIssue = async (values: UpdateIssueInput) => {
+  const updateIssue = async (values: { id: number } & IssueInput) => {
     try {
       await updateIssueMutation.mutateAsync({
         id: values.id,
@@ -57,7 +72,7 @@ export const useIssues = () => {
     }
   };
 
-  const deleteIssue = async ({ id }: DeleteIssueInput) => {
+  const deleteIssue = async (id: number) => {
     try {
       await deleteIssueMutation.mutateAsync({ id });
       toast.success("Issue deleted successfully!");
@@ -70,7 +85,6 @@ export const useIssues = () => {
 
   return {
     issues: issues.data ?? [],
-    getIssueById,
     addIssue,
     updateIssue,
     deleteIssue,
