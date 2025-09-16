@@ -2,6 +2,7 @@ import { db } from "@/db/drizzle";
 import { issuesTable } from "@/db/schema";
 import { issueSchema } from "@/lib/validations/issue";
 import { procedure, router } from "@/server/trpc";
+import { auth } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import z from "zod";
@@ -67,6 +68,15 @@ export const issuesRouter = router({
     }
   }),
   add: procedure.input(issueSchema).mutation(async (opts) => {
+    const { isAuthenticated } = await auth();
+
+    if (!isAuthenticated) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You must be logged in to create an issue"
+      });
+    }
+
     const { title, description, priority } = opts.input;
     try {
       await db.insert(issuesTable).values({ title, description, priority });
@@ -93,6 +103,15 @@ export const issuesRouter = router({
   update: procedure
     .input(z.object({ id: z.number(), ...issueSchema.shape }))
     .mutation(async (opts) => {
+      const { isAuthenticated } = await auth();
+
+      if (!isAuthenticated) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You must be logged in to update an issue"
+        });
+      }
+
       const { id, title, description, status, priority } = opts.input;
       try {
         await db
@@ -113,6 +132,15 @@ export const issuesRouter = router({
   delete: procedure
     .input(z.object({ id: z.number() }))
     .mutation(async (opts) => {
+      const { isAuthenticated } = await auth();
+
+      if (!isAuthenticated) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You must be logged in to delete an issue"
+        });
+      }
+
       const { id } = opts.input;
       try {
         await db.delete(issuesTable).where(eq(issuesTable.id, id));

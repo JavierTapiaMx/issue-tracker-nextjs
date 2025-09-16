@@ -1,5 +1,8 @@
-import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 import { TRPCProvider } from "@/trpc/client";
+import { ClerkProvider } from "@clerk/nextjs";
+import { shadcn } from "@clerk/themes";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 const Providers = ({
   children,
@@ -8,9 +11,23 @@ const Providers = ({
   typeof NextThemesProvider
 >) => {
   return (
-    <NextThemesProvider {...props}>
-      <TRPCProvider>{children}</TRPCProvider>
-    </NextThemesProvider>
+    <ClerkProvider
+      appearance={{
+        baseTheme: shadcn
+      }}
+    >
+      <NextThemesProvider {...props}>
+        <TRPCProvider>
+          {children}
+          <Toaster
+            position="bottom-center"
+            toastOptions={{
+              duration: 4000
+            }}
+          />
+        </TRPCProvider>
+      </NextThemesProvider>
+    </ClerkProvider>
   );
 };
 

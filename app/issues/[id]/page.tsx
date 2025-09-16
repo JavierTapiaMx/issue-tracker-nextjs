@@ -5,6 +5,7 @@ import IssueDetailsError from "@/components/Issues/IssueDetailsError";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/trpc/server";
 import { Issue } from "@/types/Issue";
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 // import delay from "delay";
@@ -14,6 +15,8 @@ interface Props {
 }
 
 const IssueDetailsPage = async ({ params }: Props) => {
+  const { isAuthenticated } = await auth();
+
   let issue: Issue | null = null;
   let errorMessage: string | null = null;
 
@@ -57,8 +60,12 @@ const IssueDetailsPage = async ({ params }: Props) => {
       </div>
 
       <div className="flex flex-row gap-4 lg:flex-col">
-        <EditIssueButton issueId={issue.id} />
-        <DeleteIssueButton issueId={issue.id} />
+        {isAuthenticated && (
+          <>
+            <EditIssueButton issueId={issue.id} />
+            <DeleteIssueButton issueId={issue.id} />
+          </>
+        )}
         <Button variant="outline">
           <Link href="/issues">Back to Issues</Link>
         </Button>
