@@ -8,6 +8,7 @@ import { Issue } from "@/types/Issue";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import AssigneeSelect from "@/components/Issues/AssigneeSelect";
 // import delay from "delay";
 
 interface Props {
@@ -62,6 +63,7 @@ const IssueDetailsPage = async ({ params }: Props) => {
       <div className="flex flex-row gap-4 lg:flex-col">
         {isAuthenticated && (
           <>
+            <AssigneeSelect />
             <EditIssueButton issueId={issue.id} />
             <DeleteIssueButton issueId={issue.id} />
           </>
