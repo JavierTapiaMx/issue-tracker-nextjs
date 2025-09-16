@@ -56,7 +56,7 @@ const IssueDetailsPage = async ({ params }: Props) => {
         <IssueDetails issue={issue} />
       </div>
 
-      <div className="flex flex-row gap-2 lg:flex-col">
+      <div className="flex flex-row gap-4 lg:flex-col">
         <EditIssueButton issueId={issue.id} />
         <DeleteIssueButton issueId={issue.id} />
         <Button variant="outline">
