@@ -1,5 +1,4 @@
-import { IssueStatus } from "@/db/schema";
-import type { IssueInput } from "@/lib/validations/issue";
+import type { IssueFormInput, IssueUpdateInput } from "@/lib/validations/issue";
 import { trpc } from "@/trpc/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -39,12 +38,11 @@ export const useIssues = () => {
   // Removed getIssueById function since it violates Rules of Hooks
   // Components should use trpc.issues.getById.useQuery directly
 
-  const addIssue = async (values: IssueInput) => {
+  const addIssue = async (values: IssueFormInput) => {
     try {
       await addIssueMutation.mutateAsync({
         title: values.title,
         description: values.description,
-        status: IssueStatus.OPEN, // New issues default to OPEN status
         priority: values.priority
       });
       toast.success("Issue created successfully!");
@@ -55,7 +53,7 @@ export const useIssues = () => {
     }
   };
 
-  const updateIssue = async (values: { id: number } & IssueInput) => {
+  const updateIssue = async (values: { id: number } & IssueUpdateInput) => {
     try {
       await updateIssueMutation.mutateAsync({
         id: values.id,

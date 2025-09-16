@@ -1,6 +1,6 @@
 import { db } from "@/db/drizzle";
 import { issuesTable } from "@/db/schema";
-import { issueSchema } from "@/lib/validations/issue";
+import { issueFormSchema, issueUpdateSchema } from "@/lib/validations/issue";
 import { procedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
@@ -68,7 +68,7 @@ export const issuesRouter = router({
         });
       }
     }),
-  add: procedure.input(issueSchema).mutation(async ({ input, ctx }) => {
+  add: procedure.input(issueFormSchema).mutation(async ({ input, ctx }) => {
     const { isAuthenticated } = ctx.auth;
 
     if (!isAuthenticated) {
@@ -80,6 +80,7 @@ export const issuesRouter = router({
 
     const { title, description, priority } = input;
     try {
+      // Status defaults to OPEN for new issues (handled by schema default)
       await db.insert(issuesTable).values({ title, description, priority });
       return { success: true };
     } catch (error) {
@@ -102,7 +103,7 @@ export const issuesRouter = router({
     }
   }),
   update: procedure
-    .input(z.object({ id: z.number(), ...issueSchema.shape }))
+    .input(z.object({ id: z.number(), ...issueUpdateSchema.shape }))
     .mutation(async ({ input, ctx }) => {
       const { isAuthenticated } = ctx.auth;
 
