@@ -2,7 +2,6 @@ import { db } from "@/db/drizzle";
 import { issuesTable } from "@/db/schema";
 import { issueSchema } from "@/lib/validations/issue";
 import { procedure, router } from "@/server/trpc";
-import { auth } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import z from "zod";
@@ -38,37 +37,39 @@ export const issuesRouter = router({
       });
     }
   }),
-  getById: procedure.input(z.object({ id: z.number() })).query(async (opts) => {
-    const { id } = opts.input;
-    try {
-      const result = await db
-        .select()
-        .from(issuesTable)
-        .where(eq(issuesTable.id, id));
+  getById: procedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ input }) => {
+      const { id } = input;
+      try {
+        const result = await db
+          .select()
+          .from(issuesTable)
+          .where(eq(issuesTable.id, id));
 
-      if (result.length === 0) {
+        if (result.length === 0) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: `Issue with ID ${id} not found`
+          });
+        }
+
+        return result[0];
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error; // Re-throw TRPCErrors as-is
+        }
+
+        console.error("Database error when fetching issue by ID:", error);
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: `Issue with ID ${id} not found`
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch issue from database",
+          cause: error
         });
       }
-
-      return result[0];
-    } catch (error) {
-      if (error instanceof TRPCError) {
-        throw error; // Re-throw TRPCErrors as-is
-      }
-
-      console.error("Database error when fetching issue by ID:", error);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch issue from database",
-        cause: error
-      });
-    }
-  }),
-  add: procedure.input(issueSchema).mutation(async (opts) => {
-    const { isAuthenticated } = await auth();
+    }),
+  add: procedure.input(issueSchema).mutation(async ({ input, ctx }) => {
+    const { isAuthenticated } = ctx.auth;
 
     if (!isAuthenticated) {
       throw new TRPCError({
@@ -77,7 +78,7 @@ export const issuesRouter = router({
       });
     }
 
-    const { title, description, priority } = opts.input;
+    const { title, description, priority } = input;
     try {
       await db.insert(issuesTable).values({ title, description, priority });
       return { success: true };
@@ -102,8 +103,8 @@ export const issuesRouter = router({
   }),
   update: procedure
     .input(z.object({ id: z.number(), ...issueSchema.shape }))
-    .mutation(async (opts) => {
-      const { isAuthenticated } = await auth();
+    .mutation(async ({ input, ctx }) => {
+      const { isAuthenticated } = ctx.auth;
 
       if (!isAuthenticated) {
         throw new TRPCError({
@@ -112,7 +113,7 @@ export const issuesRouter = router({
         });
       }
 
-      const { id, title, description, status, priority } = opts.input;
+      const { id, title, description, status, priority } = input;
       try {
         await db
           .update(issuesTable)
@@ -131,8 +132,8 @@ export const issuesRouter = router({
     }),
   delete: procedure
     .input(z.object({ id: z.number() }))
-    .mutation(async (opts) => {
-      const { isAuthenticated } = await auth();
+    .mutation(async ({ input, ctx }) => {
+      const { isAuthenticated } = ctx.auth;
 
       if (!isAuthenticated) {
         throw new TRPCError({
@@ -141,7 +142,7 @@ export const issuesRouter = router({
         });
       }
 
-      const { id } = opts.input;
+      const { id } = input;
       try {
         await db.delete(issuesTable).where(eq(issuesTable.id, id));
         return { success: true };
