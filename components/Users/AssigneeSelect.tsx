@@ -8,7 +8,14 @@ import {
 import { trpc } from "@/trpc/server";
 
 const AssigneeSelect = async () => {
-  const users = await trpc.users.getAll();
+  let users;
+
+  try {
+    users = await trpc.users.getAll();
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return null;
+  }
 
   return (
     <Select>

@@ -8,7 +8,7 @@ import { Issue } from "@/types/Issue";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import AssigneeSelect from "@/components/Issues/AssigneeSelect";
+import AssigneeSelect from "@/components/Users/AssigneeSelect";
 // import delay from "delay";
 
 interface Props {
