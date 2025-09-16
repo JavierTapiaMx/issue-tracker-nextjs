@@ -5,14 +5,10 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { createClerkClient, User } from "@clerk/backend";
+import { trpc } from "@/trpc/server";
 
 const AssigneeSelect = async () => {
-  const clerkClient = createClerkClient({
-    secretKey: process.env.CLERK_SECRET_KEY
-  });
-
-  const { data: users } = await clerkClient.users.getUserList();
+  const users = await trpc.users.getAll();
 
   return (
     <Select>
@@ -20,7 +16,7 @@ const AssigneeSelect = async () => {
         <SelectValue placeholder="Assign..." />
       </SelectTrigger>
       <SelectContent>
-        {users.map((user: User) => (
+        {users.map((user) => (
           <SelectItem key={user.id} value={user.id}>
             {user.firstName} {user.lastName} (
             {user.emailAddresses[0]?.emailAddress})
