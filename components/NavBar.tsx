@@ -1,10 +1,18 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton
+} from "@clerk/nextjs";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AiFillBug } from "react-icons/ai";
 import ThemeToggle from "./ThemeToggle";
+import { Button } from "./ui/button";
 
 const NavBar = () => {
   const pathname = usePathname();
@@ -55,7 +63,24 @@ const NavBar = () => {
           ))}
         </ul>
       </div>
-      <ThemeToggle />
+      <div className="flex flex-row items-center gap-4">
+        <ThemeToggle />
+        <SignedOut>
+          <SignInButton>
+            <Button variant="outline" size="sm" className="cursor-pointer">
+              Sign In
+            </Button>
+          </SignInButton>
+          <SignUpButton>
+            <Button size="sm" className="cursor-pointer">
+              Sign Up
+            </Button>
+          </SignUpButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </div>
     </nav>
   );
 };
