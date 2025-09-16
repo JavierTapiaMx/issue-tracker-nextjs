@@ -6,12 +6,12 @@ import { ThemeProvider } from "./themeProvider";
 import { TrpcProvider } from "./trpcProvider";
 import { ToastProvider } from "./toastProvider";
 
-export function Providers({
+export const Providers = ({
   children,
   ...themeProps
 }: {
   children: React.ReactNode;
-} & React.ComponentProps<typeof ThemeProvider>) {
+} & React.ComponentProps<typeof ThemeProvider>) => {
   return (
     <QueryProvider>
       <AuthProvider>
@@ -24,7 +24,7 @@ export function Providers({
       </AuthProvider>
     </QueryProvider>
   );
-}
+};
 
 // Export individual providers for flexibility
 export { AuthProvider } from "./authProvider";

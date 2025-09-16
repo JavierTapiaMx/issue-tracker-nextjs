@@ -10,6 +10,6 @@ const toasterConfig = {
   }
 } as const;
 
-export function ToastProvider() {
+export const ToastProvider = () => {
   return <Toaster {...toasterConfig} />;
-}
+};

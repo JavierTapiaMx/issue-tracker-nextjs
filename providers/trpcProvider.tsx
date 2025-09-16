@@ -2,6 +2,6 @@
 
 import { TRPCProvider as OriginalTRPCProvider } from "@/trpc/client";
 
-export function TrpcProvider({ children }: { children: React.ReactNode }) {
+export const TrpcProvider = ({ children }: { children: React.ReactNode }) => {
   return <OriginalTRPCProvider>{children}</OriginalTRPCProvider>;
-}
+};
