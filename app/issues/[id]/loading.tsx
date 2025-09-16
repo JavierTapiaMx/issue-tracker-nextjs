@@ -21,7 +21,7 @@ const LoadingIssueDetailsPage = () => {
         </Card>
       </div>
 
-      <div className="flex flex-row gap-2 lg:flex-col">
+      <div className="flex flex-row gap-4 lg:flex-col">
         <Skeleton className="h-8 w-1/6 lg:w-full" />
         <Skeleton className="h-8 w-1/6 lg:w-full" />
         <Skeleton className="h-8 w-1/4 lg:w-full" />
