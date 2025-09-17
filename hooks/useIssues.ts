@@ -5,13 +5,16 @@ import { toast } from "sonner";
 
 export const useIssues = () => {
   const utils = trpc.useUtils();
+
   const issues = trpc.issues.getAll.useQuery();
+
   const addIssueMutation = trpc.issues.add.useMutation({
     onSuccess: () => {
       // Invalidate all issues queries after successful add
       utils.issues.getAll.invalidate();
     }
   });
+
   const updateIssueMutation = trpc.issues.update.useMutation({
     onSuccess: async (_, variables) => {
       // Multiple cache invalidation strategies for immediate updates
@@ -27,12 +30,14 @@ export const useIssues = () => {
       utils.issues.getById.reset({ id: variables.id });
     }
   });
+
   const deleteIssueMutation = trpc.issues.delete.useMutation({
     onSuccess: () => {
       // Invalidate all issues queries after successful delete
       utils.issues.getAll.invalidate();
     }
   });
+
   const router = useRouter();
 
   // Removed getIssueById function since it violates Rules of Hooks
