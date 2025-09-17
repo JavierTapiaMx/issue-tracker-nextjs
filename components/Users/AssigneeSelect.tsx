@@ -41,7 +41,7 @@ const AssigneeSelect = ({ issueId, assignedToUserId }: Props) => {
       onValueChange={handleUserChange}
       disabled={isUpdating}
     >
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="max-w-sm lg:w-full">
         <SelectValue placeholder="Assign..." />
       </SelectTrigger>
       <SelectContent>
