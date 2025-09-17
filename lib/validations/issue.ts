@@ -5,12 +5,12 @@ import { z } from "zod";
 export const issueFormSchema = z.object({
   title: z.string().min(1, "Title is required").max(255),
   description: z.string().min(1, "Description is required"),
-  priority: z.nativeEnum(IssuePriorities)
+  priority: z.enum(IssuePriorities)
 });
 
 // Schema for updating existing issues (includes status)
 export const issueUpdateSchema = issueFormSchema.extend({
-  status: z.nativeEnum(IssueStatus)
+  status: z.enum(IssueStatus)
 });
 
 // Legacy schema for backward compatibility
