@@ -1,6 +1,7 @@
 import { procedure, router } from "@/server/trpc";
 import { createClerkClient } from "@clerk/backend";
 import { TRPCError } from "@trpc/server";
+import z from "zod";
 
 export const usersRouter = router({
   getAll: procedure.query(async () => {
@@ -36,5 +37,31 @@ export const usersRouter = router({
         cause: error
       });
     }
-  })
+  }),
+  getById: procedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const { id } = input;
+
+      try {
+        const clerkClient = createClerkClient({
+          secretKey: process.env.CLERK_SECRET_KEY
+        });
+
+        const user = await clerkClient.users.getUser(id);
+        return user;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error; // Re-throw TRPCErrors as-is
+        }
+
+        console.error("Error fetching user by Id from Clerk:", error);
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch user from Clerk",
+          cause: error
+        });
+      }
+    })
 });

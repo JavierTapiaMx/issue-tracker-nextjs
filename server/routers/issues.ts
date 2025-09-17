@@ -41,6 +41,7 @@ export const issuesRouter = router({
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
       const { id } = input;
+
       try {
         const result = await db
           .select()
@@ -60,7 +61,8 @@ export const issuesRouter = router({
           throw error; // Re-throw TRPCErrors as-is
         }
 
-        console.error("Database error when fetching issue by ID:", error);
+        console.error("Database error when fetching issue by Id:", error);
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch issue from database",
@@ -79,6 +81,7 @@ export const issuesRouter = router({
     }
 
     const { title, description, priority } = input;
+
     try {
       // Status defaults to OPEN for new issues (handled by schema default)
       await db.insert(issuesTable).values({ title, description, priority });
@@ -103,7 +106,12 @@ export const issuesRouter = router({
     }
   }),
   update: procedure
-    .input(z.object({ id: z.number(), ...issueUpdateSchema.shape }))
+    .input(
+      z.object({
+        id: z.number(),
+        ...issueUpdateSchema.omit({ id: true }).partial().shape
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const { isAuthenticated } = ctx.auth;
 
@@ -114,16 +122,42 @@ export const issuesRouter = router({
         });
       }
 
-      const { id, title, description, status, priority } = input;
+      const { id, ...updateFields } = input;
+
+      if (id === undefined) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Issue ID is required"
+        });
+      }
+
+      // Remove undefined fields to only update provided values
+      const fieldsToUpdate = Object.fromEntries(
+        Object.entries(updateFields).filter(([, value]) => value !== undefined)
+      );
+
+      // Check if there are any fields to update
+      if (Object.keys(fieldsToUpdate).length === 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No fields provided for update"
+        });
+      }
+
       try {
         await db
           .update(issuesTable)
-          .set({ title, description, status, priority })
+          .set(fieldsToUpdate)
           .where(eq(issuesTable.id, id));
 
         return { success: true };
       } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error; // Re-throw TRPCErrors as-is
+        }
+
         console.error("Database error when updating issue:", error);
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to update issue",
@@ -144,11 +178,13 @@ export const issuesRouter = router({
       }
 
       const { id } = input;
+
       try {
         await db.delete(issuesTable).where(eq(issuesTable.id, id));
         return { success: true };
       } catch (error) {
         console.error("Database error when deleting issue:", error);
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to delete issue",

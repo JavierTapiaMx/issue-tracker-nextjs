@@ -1,4 +1,4 @@
-import type { IssueFormInput, IssueUpdateInput } from "@/lib/validations/issue";
+import type { IssueInput } from "@/lib/validations/issue";
 import { trpc } from "@/trpc/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -43,7 +43,7 @@ export const useIssues = () => {
   // Removed getIssueById function since it violates Rules of Hooks
   // Components should use trpc.issues.getById.useQuery directly
 
-  const addIssue = async (values: IssueFormInput) => {
+  const addIssue = async (values: IssueInput) => {
     try {
       await addIssueMutation.mutateAsync({
         title: values.title,
@@ -58,14 +58,20 @@ export const useIssues = () => {
     }
   };
 
-  const updateIssue = async (values: { id: number } & IssueUpdateInput) => {
+  const updateIssue = async (values: IssueInput) => {
+    if (!values.id) {
+      toast.error("Issue Id is required for update");
+      return;
+    }
+
     try {
       await updateIssueMutation.mutateAsync({
         id: values.id,
         title: values.title,
         description: values.description,
         status: values.status,
-        priority: values.priority
+        priority: values.priority,
+        assignedToUserId: values.assignedToUserId
       });
       toast.success("Issue updated successfully!");
       router.push("/issues");
