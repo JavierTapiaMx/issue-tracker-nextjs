@@ -16,25 +16,13 @@ const baseIssueFields = {
     .nullable()
 };
 
-// Schema for creating new issues (no status required, defaults to OPEN)
-export const issueFormSchema = z.object({
+export const addIssueSchema = z.object({
   title: baseIssueFields.title,
   description: baseIssueFields.description,
   priority: baseIssueFields.priority
 });
 
-// Schema for form usage (handles both create and edit)
-export const issueFormFullSchema = z.object({
-  id: z.number().optional(),
-  title: baseIssueFields.title,
-  description: baseIssueFields.description,
-  status: baseIssueFields.status.optional(),
-  priority: baseIssueFields.priority,
-  assignedToUserId: baseIssueFields.assignedToUserId.optional()
-});
-
-// Schema for updating existing issues (all fields optional except id)
-export const issueUpdateSchema = z.object({
+export const updateIssueSchema = z.object({
   id: baseIssueFields.id,
   title: baseIssueFields.title.optional(),
   description: baseIssueFields.description.optional(),
@@ -43,9 +31,15 @@ export const issueUpdateSchema = z.object({
   assignedToUserId: baseIssueFields.assignedToUserId
 });
 
-// Legacy schema for backward compatibility
-export const issueSchema = issueFormFullSchema;
+export const issueFormSchema = z.object({
+  id: z.number().optional(),
+  title: baseIssueFields.title,
+  description: baseIssueFields.description,
+  status: baseIssueFields.status.optional(),
+  priority: baseIssueFields.priority,
+  assignedToUserId: baseIssueFields.assignedToUserId.optional()
+});
 
+export type AddIssueInput = z.infer<typeof addIssueSchema>;
+export type UpdateIssueInput = z.infer<typeof updateIssueSchema>;
 export type IssueFormInput = z.infer<typeof issueFormSchema>;
-export type IssueUpdateInput = z.infer<typeof issueUpdateSchema>;
-export type IssueInput = z.infer<typeof issueSchema>;

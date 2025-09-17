@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Select,
   SelectContent,
@@ -5,24 +7,45 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { trpc } from "@/trpc/server";
+import { useIssues } from "@/hooks/useIssues";
+import { trpc } from "@/trpc/client";
+import { Skeleton } from "../ui/skeleton";
 
-const AssigneeSelect = async () => {
-  let users;
+interface Props {
+  issueId: number;
+  assignedToUserId?: string | null;
+}
 
-  try {
-    users = await trpc.users.getAll();
-  } catch (error) {
-    console.error("Error fetching users:", error);
+const AssigneeSelect = ({ issueId, assignedToUserId }: Props) => {
+  const { data: users = [], isLoading } = trpc.users.getAll.useQuery();
+  const { updateIssue, isPending: isUpdating } = useIssues();
+
+  if (isLoading) {
+    return <Skeleton className="h-10 w-full" />;
+  }
+
+  if (!users) {
     return null;
   }
 
+  const handleUserChange = (userId: string) => {
+    updateIssue({
+      id: issueId,
+      assignedToUserId: userId === "unassigned" ? null : userId
+    });
+  };
+
   return (
-    <Select>
+    <Select
+      defaultValue={assignedToUserId ?? "unassigned"}
+      onValueChange={handleUserChange}
+      disabled={isUpdating}
+    >
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Assign..." />
       </SelectTrigger>
       <SelectContent>
+        <SelectItem value="unassigned">Unassigned</SelectItem>
         {users.map((user) => (
           <SelectItem key={user.id} value={user.id}>
             {user.firstName} {user.lastName} (
