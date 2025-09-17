@@ -1,5 +1,5 @@
 import { db } from "@/db/drizzle";
-import { issuesTable } from "@/db/schema";
+import { issuesTable, IssueStatus } from "@/db/schema";
 import { addIssueSchema, updateIssueSchema } from "@/lib/validations/issue";
 import { procedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
@@ -66,6 +66,27 @@ export const issuesRouter = router({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch issue from database",
+          cause: error
+        });
+      }
+    }),
+  getByStatus: procedure
+    .input(z.object({ status: z.enum(IssueStatus) }))
+    .query(async ({ input }) => {
+      const { status } = input;
+
+      try {
+        const issues = await db
+          .select()
+          .from(issuesTable)
+          .where(eq(issuesTable.status, status));
+        return issues;
+      } catch (error) {
+        console.error("Database error when fetching issues by status:", error);
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch issues by status from database",
           cause: error
         });
       }
