@@ -20,7 +20,7 @@ import {
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { IssuePriorities, IssueStatus } from "@/db/schema";
 import { useIssues } from "@/hooks/useIssues";
-import { IssueInput, issueSchema } from "@/lib/validations/issue";
+import { IssueFormInput, issueFormSchema } from "@/lib/validations/issue";
 import { Issue } from "@/types/Issue";
 import { zodResolver } from "@hookform/resolvers/zod";
 import "easymde/dist/easymde.min.css";
@@ -36,8 +36,8 @@ interface Props {
 const IssueForm = ({ issue }: Props) => {
   const { addIssue, updateIssue, isPending: isSubmitting } = useIssues();
 
-  const form = useForm<IssueInput>({
-    resolver: zodResolver(issueSchema),
+  const form = useForm<IssueFormInput>({
+    resolver: zodResolver(issueFormSchema),
     defaultValues: {
       title: issue?.title || "",
       description: issue?.description || "",

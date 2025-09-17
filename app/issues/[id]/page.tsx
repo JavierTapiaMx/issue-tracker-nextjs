@@ -3,6 +3,7 @@ import EditIssueButton from "@/components/Issues/EditIssueButton";
 import IssueDetails from "@/components/Issues/IssueDetails";
 import IssueDetailsError from "@/components/Issues/IssueDetailsError";
 import { Button } from "@/components/ui/button";
+import AssigneeSelect from "@/components/Users/AssigneeSelect";
 import { trpc } from "@/trpc/server";
 import { Issue } from "@/types/Issue";
 import { auth } from "@clerk/nextjs/server";
@@ -62,6 +63,10 @@ const IssueDetailsPage = async ({ params }: Props) => {
       <div className="flex flex-row gap-4 lg:flex-col">
         {isAuthenticated && (
           <>
+            <AssigneeSelect
+              issueId={issue.id}
+              assignedToUserId={issue.assignedToUserId}
+            />
             <EditIssueButton issueId={issue.id} />
             <DeleteIssueButton issueId={issue.id} />
           </>

@@ -1,18 +1,20 @@
-import { IssueStatus } from "@/db/schema";
-import type { IssueInput } from "@/lib/validations/issue";
+import type { AddIssueInput, UpdateIssueInput } from "@/lib/validations/issue";
 import { trpc } from "@/trpc/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const useIssues = () => {
   const utils = trpc.useUtils();
+
   const issues = trpc.issues.getAll.useQuery();
+
   const addIssueMutation = trpc.issues.add.useMutation({
     onSuccess: () => {
       // Invalidate all issues queries after successful add
       utils.issues.getAll.invalidate();
     }
   });
+
   const updateIssueMutation = trpc.issues.update.useMutation({
     onSuccess: async (_, variables) => {
       // Multiple cache invalidation strategies for immediate updates
@@ -28,23 +30,24 @@ export const useIssues = () => {
       utils.issues.getById.reset({ id: variables.id });
     }
   });
+
   const deleteIssueMutation = trpc.issues.delete.useMutation({
     onSuccess: () => {
       // Invalidate all issues queries after successful delete
       utils.issues.getAll.invalidate();
     }
   });
+
   const router = useRouter();
 
   // Removed getIssueById function since it violates Rules of Hooks
   // Components should use trpc.issues.getById.useQuery directly
 
-  const addIssue = async (values: IssueInput) => {
+  const addIssue = async (values: AddIssueInput) => {
     try {
       await addIssueMutation.mutateAsync({
         title: values.title,
         description: values.description,
-        status: IssueStatus.OPEN, // New issues default to OPEN status
         priority: values.priority
       });
       toast.success("Issue created successfully!");
@@ -55,14 +58,20 @@ export const useIssues = () => {
     }
   };
 
-  const updateIssue = async (values: { id: number } & IssueInput) => {
+  const updateIssue = async (values: UpdateIssueInput) => {
+    if (!values.id) {
+      toast.error("Issue Id is required for update");
+      return;
+    }
+
     try {
       await updateIssueMutation.mutateAsync({
         id: values.id,
         title: values.title,
         description: values.description,
         status: values.status,
-        priority: values.priority
+        priority: values.priority,
+        assignedToUserId: values.assignedToUserId
       });
       toast.success("Issue updated successfully!");
       router.push("/issues");

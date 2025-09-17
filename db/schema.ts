@@ -32,5 +32,6 @@ export const issuesTable = mysqlTable("issues", {
   updatedAt: datetime({ mode: "date" })
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`)
-    .$onUpdate(() => new Date())
+    .$onUpdate(() => new Date()),
+  assignedToUserId: varchar({ length: 255 })
 });
