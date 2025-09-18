@@ -3,7 +3,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -16,6 +15,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import IssuePriorityBadge from "./IssuePriorityBadge";
 import IssueStatusBadge from "./IssueStatusBadge";
+import Pagination from "../Pagination";
 
 interface Props {
   issues: Issue[];
@@ -70,15 +70,11 @@ const IssuesTable = ({ issues }: Props) => {
   ];
 
   return (
-    <div className="w-full space-y-4">
+    <div className="mt-4 w-full">
       <div className="bg-card rounded-lg border">
         <div className="bg-background w-full overflow-hidden rounded-md border">
           <div className="overflow-x-auto">
             <Table>
-              <TableCaption className="text-muted-foreground mt-8 text-sm">
-                Total: {issues.length}{" "}
-                {issues.length === 1 ? "issue" : "issues"}
-              </TableCaption>
               <TableHeader>
                 <TableRow>
                   {columns.map((column) => (
@@ -110,7 +106,7 @@ const IssuesTable = ({ issues }: Props) => {
                       </div>
                       {/* Mobile-only: Show additional info below title */}
                       <div className="text-muted-foreground block space-y-2 text-sm md:hidden">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-row items-center gap-2">
                           <IssueStatusBadge status={issue.status} />
                           <IssuePriorityBadge priority={issue.priority} />
                         </div>
@@ -145,6 +141,7 @@ const IssuesTable = ({ issues }: Props) => {
           </div>
         </div>
       </div>
+      <Pagination itemCount={issues.length} pageSize={10} currentPage={1} />
     </div>
   );
 };
