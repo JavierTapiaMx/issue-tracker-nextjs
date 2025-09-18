@@ -29,7 +29,6 @@ const IssuesTable = ({ issues }: Props) => {
   const currentSortBy = searchParams.get("sortBy") as keyof Issue | null;
   const currentOrder = searchParams.get("order") as "asc" | "desc" | null;
 
-  // Helper function to render the appropriate sort icon
   const getSortIcon = (column: keyof Issue) => {
     if (currentSortBy === column) {
       if (currentOrder === "asc") {
@@ -42,29 +41,25 @@ const IssuesTable = ({ issues }: Props) => {
   };
 
   const handleSorting = (column: keyof Issue) => {
-    let queryParams = "";
+    const params = new URLSearchParams();
 
     const currentStatus = searchParams.get("status");
     const currentSortByParam = searchParams.get("sortBy");
     const currentOrderParam = searchParams.get("order");
 
     if (currentStatus) {
-      queryParams += !queryParams ? "" : "&";
-      queryParams += `status=${currentStatus}`;
+      params.set("status", currentStatus);
     }
 
-    queryParams += !queryParams ? "" : "&";
-    queryParams += `sortBy=${column}`;
+    params.set("sortBy", column);
 
     if (currentSortByParam === column) {
-      queryParams += !queryParams ? "" : "&";
-      queryParams += `order=${currentOrderParam === "asc" ? "desc" : "asc"}`;
+      params.set("order", currentOrderParam === "asc" ? "desc" : "asc");
     } else {
-      queryParams += !queryParams ? "" : "&";
-      queryParams += `order=asc`;
+      params.set("order", "asc");
     }
 
-    router.push(`/issues?${queryParams}`);
+    router.push(`/issues?${params.toString()}`);
   };
 
   const columns: { title: string; value: keyof Issue; className?: string }[] = [
