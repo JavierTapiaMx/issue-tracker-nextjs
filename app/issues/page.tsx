@@ -10,7 +10,11 @@ import { FaRegPlusSquare } from "react-icons/fa";
 // import delay from "del@/components/Issues/IssuesTable
 
 interface Props {
-  searchParams: Promise<{ status?: IssueStatus | "all" }>;
+  searchParams: Promise<{
+    status?: IssueStatus | "all";
+    sortBy?: string;
+    order?: "asc" | "desc";
+  }>;
 }
 
 const IssuesPage = async ({ searchParams }: Props) => {
@@ -21,17 +25,38 @@ const IssuesPage = async ({ searchParams }: Props) => {
 
   const resolvedSearchParams = await searchParams;
   let status = resolvedSearchParams?.status;
+  let sortBy = resolvedSearchParams?.sortBy;
+  let order = resolvedSearchParams?.order;
 
-  if (!Object.values(IssueStatus).includes(status as IssueStatus)) {
+  if (
+    !Object.values(IssueStatus).includes(status as IssueStatus) &&
+    status !== "all"
+  ) {
     status = "all";
   }
 
+  if (
+    sortBy &&
+    !["title", "status", "priority", "createdAt"].includes(sortBy)
+  ) {
+    sortBy = undefined;
+  }
+
+  if (order && !["asc", "desc"].includes(order)) {
+    order = undefined;
+  }
+
   try {
-    if (!status || status === "all") {
-      issues = await trpc.issues.getAll();
-    } else {
-      issues = await trpc.issues.getByStatus({ status });
-    }
+    issues = await trpc.issues.getIssues({
+      status: status as IssueStatus | "all" | undefined,
+      sortBy: sortBy as
+        | "title"
+        | "status"
+        | "priority"
+        | "createdAt"
+        | undefined,
+      order: order as "asc" | "desc" | undefined
+    });
   } catch (error) {
     console.error("Error fetching issues:", error);
 

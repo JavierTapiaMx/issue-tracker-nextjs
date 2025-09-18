@@ -1,9 +1,5 @@
 "use client";
 
-import { Issue } from "@/types/Issue";
-import IssueStatusBadge from "./IssueStatusBadge";
-import IssuePriorityBadge from "./IssuePriorityBadge";
-
 import {
   Table,
   TableBody,
@@ -13,13 +9,71 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
+import { Issue } from "@/types/Issue";
+import { ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "../ui/button";
+import IssuePriorityBadge from "./IssuePriorityBadge";
+import IssueStatusBadge from "./IssueStatusBadge";
 
 interface Props {
   issues: Issue[];
 }
 
 const IssuesTable = ({ issues }: Props) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Get current sorting state from URL parameters
+  const currentSortBy = searchParams.get("sortBy") as keyof Issue | null;
+  const currentOrder = searchParams.get("order") as "asc" | "desc" | null;
+
+  // Helper function to render the appropriate sort icon
+  const getSortIcon = (column: keyof Issue) => {
+    if (currentSortBy === column) {
+      if (currentOrder === "asc") {
+        return <ChevronUp className="ml-1 h-4 w-4" />;
+      } else {
+        return <ChevronDown className="ml-1 h-4 w-4" />;
+      }
+    }
+    return <ArrowUpDown className="ml-1 h-4 w-4" />;
+  };
+
+  const handleSorting = (column: keyof Issue) => {
+    let queryParams = "";
+
+    const currentStatus = searchParams.get("status");
+    const currentSortByParam = searchParams.get("sortBy");
+    const currentOrderParam = searchParams.get("order");
+
+    if (currentStatus) {
+      queryParams += !queryParams ? "" : "&";
+      queryParams += `status=${currentStatus}`;
+    }
+
+    queryParams += !queryParams ? "" : "&";
+    queryParams += `sortBy=${column}`;
+
+    if (currentSortByParam === column) {
+      queryParams += !queryParams ? "" : "&";
+      queryParams += `order=${currentOrderParam === "asc" ? "desc" : "asc"}`;
+    } else {
+      queryParams += !queryParams ? "" : "&";
+      queryParams += `order=asc`;
+    }
+
+    router.push(`/issues?${queryParams}`);
+  };
+
+  const columns: { title: string; value: keyof Issue; className?: string }[] = [
+    { title: "Issue", value: "title" },
+    { title: "Status", value: "status", className: "hidden md:table-cell" },
+    { title: "Priority", value: "priority", className: "hidden md:table-cell" },
+    { title: "Created", value: "createdAt", className: "hidden md:table-cell" }
+  ];
+
   return (
     <div className="w-full space-y-4">
       <div className="bg-card rounded-lg border">
@@ -32,14 +86,19 @@ const IssuesTable = ({ issues }: Props) => {
               </TableCaption>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead className="hidden md:table-cell">Status</TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    Priority
-                  </TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    Created
-                  </TableHead>
+                  {columns.map((column) => (
+                    <TableHead key={column.value} className={column.className}>
+                      <Button
+                        variant={
+                          currentSortBy === column.value ? "secondary" : "ghost"
+                        }
+                        onClick={() => handleSorting(column.value)}
+                      >
+                        {column.title}
+                        {getSortIcon(column.value)}
+                      </Button>
+                    </TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>

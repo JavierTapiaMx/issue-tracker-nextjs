@@ -1,12 +1,69 @@
 import { db } from "@/db/drizzle";
 import { issuesTable, IssueStatus } from "@/db/schema";
-import { addIssueSchema, updateIssueSchema } from "@/lib/validations/issue";
+import {
+  addIssueSchema,
+  getIssuesSchema,
+  updateIssueSchema
+} from "@/lib/validations/issue";
 import { procedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import z from "zod";
 
 export const issuesRouter = router({
+  getIssues: procedure.input(getIssuesSchema).query(async ({ input }) => {
+    const { status, sortBy, order } = input;
+
+    try {
+      const baseQuery = db.select().from(issuesTable);
+
+      if (status && status !== "all" && sortBy) {
+        const sortDirection = order === "desc" ? desc : asc;
+        const column = issuesTable[sortBy];
+
+        const issues = await baseQuery
+          .where(eq(issuesTable.status, status))
+          .orderBy(sortDirection(column));
+
+        return issues;
+      } else if (status && status !== "all") {
+        const issues = await baseQuery.where(eq(issuesTable.status, status));
+        return issues;
+      } else if (sortBy) {
+        const sortDirection = order === "desc" ? desc : asc;
+        const column = issuesTable[sortBy];
+        const issues = await baseQuery.orderBy(sortDirection(column));
+        return issues;
+      } else {
+        const issues = await baseQuery;
+        return issues;
+      }
+    } catch (error) {
+      console.error("Database error when fetching issues:", error);
+
+      // Check if it's a database connection error
+      if (error instanceof Error) {
+        if (
+          error.message.includes("connect") ||
+          error.message.includes("connection")
+        ) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Database connection failed. Please check your database configuration.",
+            cause: error
+          });
+        }
+      }
+
+      // Generic database error
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch issues from database",
+        cause: error
+      });
+    }
+  }),
   getAll: procedure.query(async () => {
     try {
       const issues = await db.select().from(issuesTable);
