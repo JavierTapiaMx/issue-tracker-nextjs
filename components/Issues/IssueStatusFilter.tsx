@@ -8,7 +8,7 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { IssueStatus } from "@/db/schema";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const issueStatuses: { label: string; value: IssueStatus | "all" }[] = [
   { label: "All", value: "all" },
@@ -22,11 +22,26 @@ interface Props {
 }
 
 const IssueStatusFilter = ({ currentStatus }: Props) => {
+  const searchParams = useSearchParams();
   const router = useRouter();
 
   const handleStatusChange = (status: string) => {
-    const query = status === "all" ? "/issues" : `/issues?status=${status}`;
-    router.push(query);
+    const params = new URLSearchParams();
+
+    const currentSortByParam = searchParams.get("sortBy");
+    const currentOrderParam = searchParams.get("order");
+
+    if (status !== "all") params.set("status", status);
+
+    if (currentSortByParam) {
+      params.set("sortBy", currentSortByParam);
+    }
+
+    if (currentOrderParam) {
+      params.set("order", currentOrderParam);
+    }
+
+    router.push(`/issues?${params.toString()}`);
   };
 
   return (
