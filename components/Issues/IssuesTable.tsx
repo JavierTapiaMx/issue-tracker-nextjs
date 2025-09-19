@@ -3,6 +3,7 @@
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -18,9 +19,10 @@ import IssueStatusBadge from "./IssueStatusBadge";
 
 interface Props {
   issues: Issue[];
+  issuesCount: number;
 }
 
-const IssuesTable = ({ issues }: Props) => {
+const IssuesTable = ({ issues, issuesCount }: Props) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -66,6 +68,9 @@ const IssuesTable = ({ issues }: Props) => {
         <div className="bg-background w-full overflow-hidden rounded-md border">
           <div className="overflow-x-auto">
             <Table>
+              <TableCaption className="text-muted-foreground my-4 text-sm">
+                Total: {issuesCount} {issuesCount === 1 ? "issue" : "issues"}
+              </TableCaption>
               <TableHeader>
                 <TableRow>
                   {columns.map((column) => (

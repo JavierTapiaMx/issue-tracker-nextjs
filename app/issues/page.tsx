@@ -126,7 +126,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
         <NoIssues />
       ) : issues ? (
         <>
-          <IssuesTable issues={issues} />
+          <IssuesTable issues={issues} issuesCount={issuesCount} />
           <Pagination
             itemCount={issuesCount}
             pageSize={parseInt(pageSize)}
