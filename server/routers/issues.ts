@@ -7,10 +7,52 @@ import {
 } from "@/lib/validations/issue";
 import { procedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
-import { asc, desc, eq } from "drizzle-orm";
+import { asc, desc, eq, count } from "drizzle-orm";
 import z from "zod";
 
 export const issuesRouter = router({
+  getIssuesCount: procedure.input(getIssuesSchema).query(async ({ input }) => {
+    const { status } = input;
+
+    try {
+      if (status && status !== "all") {
+        const result = await db
+          .select({ count: count() })
+          .from(issuesTable)
+          .where(eq(issuesTable.status, status));
+
+        return result[0].count;
+      }
+
+      const result = await db.select({ count: count() }).from(issuesTable);
+
+      return result[0].count;
+    } catch (error) {
+      console.error("Database error when fetching issues count:", error);
+
+      // Check if it's a database connection error
+      if (error instanceof Error) {
+        if (
+          error.message.includes("connect") ||
+          error.message.includes("connection")
+        ) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Database connection failed. Please check your database configuration.",
+            cause: error
+          });
+        }
+      }
+
+      // Generic database error
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch issues count from database",
+        cause: error
+      });
+    }
+  }),
   getIssues: procedure.input(getIssuesSchema).query(async ({ input }) => {
     const { status, sortBy, order } = input;
 
@@ -23,19 +65,32 @@ export const issuesRouter = router({
 
         const issues = await baseQuery
           .where(eq(issuesTable.status, status))
-          .orderBy(sortDirection(column));
+          .orderBy(sortDirection(column))
+          .offset((input.page - 1) * input.pageSize)
+          .limit(input.pageSize);
 
         return issues;
       } else if (status && status !== "all") {
-        const issues = await baseQuery.where(eq(issuesTable.status, status));
+        const issues = await baseQuery
+          .where(eq(issuesTable.status, status))
+          .offset((input.page - 1) * input.pageSize)
+          .limit(input.pageSize);
+
         return issues;
       } else if (sortBy) {
         const sortDirection = order === "desc" ? desc : asc;
         const column = issuesTable[sortBy];
-        const issues = await baseQuery.orderBy(sortDirection(column));
+        const issues = await baseQuery
+          .orderBy(sortDirection(column))
+          .offset((input.page - 1) * input.pageSize)
+          .limit(input.pageSize);
+
         return issues;
       } else {
-        const issues = await baseQuery;
+        const issues = await baseQuery
+          .offset((input.page - 1) * input.pageSize)
+          .limit(input.pageSize);
+
         return issues;
       }
     } catch (error) {
