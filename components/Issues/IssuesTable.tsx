@@ -28,6 +28,8 @@ const IssuesTable = ({ issues }: Props) => {
   // Get current sorting state from URL parameters
   const currentSortBy = searchParams.get("sortBy") as keyof Issue | null;
   const currentOrder = searchParams.get("order") as "asc" | "desc" | null;
+  const pageSize = searchParams.get("pageSize") as string | null;
+  const currentPage = searchParams.get("page") as string | null;
 
   const getSortIcon = (column: keyof Issue) => {
     if (currentSortBy === column) {
@@ -141,7 +143,11 @@ const IssuesTable = ({ issues }: Props) => {
           </div>
         </div>
       </div>
-      <Pagination itemCount={issues.length} pageSize={10} currentPage={1} />
+      <Pagination
+        itemCount={issues.length}
+        pageSize={parseInt(pageSize || "10") as 5 | 10 | 20 | 30 | 40 | 50}
+        currentPage={parseInt(currentPage || "1")}
+      />
     </div>
   );
 };

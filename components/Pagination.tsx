@@ -1,7 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   LuChevronFirst,
   LuChevronLast,
@@ -19,13 +18,22 @@ import {
 
 interface Props {
   itemCount: number;
-  pageSize: 5 | 10 | 20 | 30 | 40;
+  pageSize: 5 | 10 | 20 | 30 | 40 | 50;
   currentPage: number;
 }
 
 const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const handlePageSizeChange = (newSize: number) => {
+    const params = new URLSearchParams(searchParams);
+
+    params.set("pageSize", newSize.toString());
+    params.set("page", "1");
+
+    router.push(`/issues?${params.toString()}`);
+  };
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams);
@@ -43,18 +51,14 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
       <div className="flex flex-row items-center gap-2">
         <p className="text-sm font-medium">Rows per page</p>
         <Select
-          onValueChange={(value: string) => {
-            const newSize = Number(value);
-            console.log("New page size:", newSize);
-            // TODO: Handle page size change
-          }}
+          onValueChange={(value) => handlePageSizeChange(parseInt(value))}
           defaultValue={pageSize.toString()}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select page size" />
           </SelectTrigger>
           <SelectContent>
-            {[5, 10, 20, 30, 40].map((size) => (
+            {[5, 10, 20, 30, 40, 50].map((size) => (
               <SelectItem key={size} value={size.toString()}>
                 {size}
               </SelectItem>
@@ -67,7 +71,7 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
           variant="outline"
           size="sm"
           className="cursor-pointer"
-          // onClick={() => table.setPageIndex(0)}
+          onClick={() => handlePageChange(1)}
           disabled={currentPage === 1}
         >
           <LuChevronFirst className="h-4 w-4" />
@@ -76,7 +80,7 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
           variant="outline"
           size="sm"
           className="cursor-pointer"
-          // onClick={() => table.previousPage()}
+          onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
           <LuChevronLeft className="h-4 w-4" />
@@ -88,7 +92,7 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
           variant="outline"
           size="sm"
           className="cursor-pointer"
-          // onClick={() => table.nextPage()}
+          onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
           <LuChevronRight className="h-4 w-4" />
@@ -97,7 +101,7 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
           variant="outline"
           size="sm"
           className="cursor-pointer"
-          // onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          onClick={() => handlePageChange(totalPages)}
           disabled={currentPage === totalPages}
         >
           <LuChevronLast className="h-4 w-4" />
