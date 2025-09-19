@@ -62,10 +62,6 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
           </SelectContent>
         </Select>
       </div>
-      {/* <div className="flex flex-row items-center gap-4"> */}
-      <div className="flex w-[100px] flex-row items-center justify-center text-sm font-medium">
-        Page {currentPage} of {totalPages}
-      </div>
       <div className="flex flex-row items-center gap-2">
         <Button
           variant="outline"
@@ -85,6 +81,9 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
         >
           <LuChevronLeft className="h-4 w-4" />
         </Button>
+        <div className="px-2 text-sm font-medium">
+          Page {currentPage} of {totalPages}
+        </div>
         <Button
           variant="outline"
           size="sm"
@@ -104,7 +103,6 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
           <LuChevronLast className="h-4 w-4" />
         </Button>
       </div>
-      {/* </div> */}
     </div>
   );
 };
