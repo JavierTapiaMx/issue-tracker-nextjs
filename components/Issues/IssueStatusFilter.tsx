@@ -26,12 +26,21 @@ const IssueStatusFilter = ({ status }: Props) => {
   const router = useRouter();
 
   const handleStatusChange = (status: string) => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams();
+
+    const currentSortByParam = searchParams.get("sortBy");
+    const currentOrderParam = searchParams.get("order");
 
     if (status !== "all") {
       params.set("status", status);
-    } else {
-      params.delete("status");
+    }
+
+    if (currentSortByParam) {
+      params.set("sortBy", currentSortByParam);
+    }
+
+    if (currentOrderParam) {
+      params.set("order", currentOrderParam);
     }
 
     router.push(`/issues?${params.toString()}`);
