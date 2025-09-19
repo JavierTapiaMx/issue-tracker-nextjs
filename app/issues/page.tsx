@@ -81,7 +81,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
         Manage and track your project issues
       </p>
       <div className="mb-6 flex flex-row items-center justify-between">
-        <IssueStatusFilter currentStatus={status} />
+        <IssueStatusFilter status={status} />
         <Button>
           <FaRegPlusSquare className="h-4 w-4" />
           <Link href="/issues/new" className="flex items-center gap-2">
