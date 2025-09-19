@@ -9,11 +9,9 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { Issue } from "@/types/Issue";
-import { PageSize } from "@/types/PageSize";
 import { ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import Pagination from "../Pagination";
 import { Button } from "../ui/button";
 import IssuePriorityBadge from "./IssuePriorityBadge";
 import IssueStatusBadge from "./IssueStatusBadge";
@@ -29,9 +27,6 @@ const IssuesTable = ({ issues }: Props) => {
   // Get current sorting state from URL parameters
   const sortBy = searchParams.get("sortBy") as keyof Issue | null;
   const order = searchParams.get("order") as "asc" | "desc" | null;
-
-  const pageSize = parseInt(searchParams.get("pageSize") as string) as PageSize;
-  const currentPage = parseInt(searchParams.get("page") as string);
 
   const getSortIcon = (column: keyof Issue) => {
     if (sortBy === column) {
@@ -138,11 +133,6 @@ const IssuesTable = ({ issues }: Props) => {
           </div>
         </div>
       </div>
-      <Pagination
-        itemCount={issues.length}
-        pageSize={pageSize || 10}
-        currentPage={currentPage || 1}
-      />
     </div>
   );
 };
