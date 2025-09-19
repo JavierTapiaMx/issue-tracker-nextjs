@@ -18,10 +18,10 @@ const issueStatuses: { label: string; value: IssueStatus | "all" }[] = [
 ];
 
 interface Props {
-  currentStatus: IssueStatus | "all" | undefined;
+  status: IssueStatus | "all" | undefined;
 }
 
-const IssueStatusFilter = ({ currentStatus }: Props) => {
+const IssueStatusFilter = ({ status }: Props) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -45,7 +45,7 @@ const IssueStatusFilter = ({ currentStatus }: Props) => {
   };
 
   return (
-    <Select onValueChange={handleStatusChange} defaultValue={currentStatus}>
+    <Select onValueChange={handleStatusChange} value={status}>
       <SelectTrigger className="max-w-sm lg:w-full">
         <SelectValue placeholder="Filter by Status" />
       </SelectTrigger>
