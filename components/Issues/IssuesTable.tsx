@@ -9,13 +9,14 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { Issue } from "@/types/Issue";
+import { PageSize } from "@/types/PageSize";
 import { ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import Pagination from "../Pagination";
 import { Button } from "../ui/button";
 import IssuePriorityBadge from "./IssuePriorityBadge";
 import IssueStatusBadge from "./IssueStatusBadge";
-import Pagination from "../Pagination";
 
 interface Props {
   issues: Issue[];
@@ -26,14 +27,15 @@ const IssuesTable = ({ issues }: Props) => {
   const router = useRouter();
 
   // Get current sorting state from URL parameters
-  const currentSortBy = searchParams.get("sortBy") as keyof Issue | null;
-  const currentOrder = searchParams.get("order") as "asc" | "desc" | null;
-  const pageSize = searchParams.get("pageSize") as string | null;
-  const currentPage = searchParams.get("page") as string | null;
+  const sortBy = searchParams.get("sortBy") as keyof Issue | null;
+  const order = searchParams.get("order") as "asc" | "desc" | null;
+
+  const pageSize = parseInt(searchParams.get("pageSize") as string) as PageSize;
+  const currentPage = parseInt(searchParams.get("page") as string);
 
   const getSortIcon = (column: keyof Issue) => {
-    if (currentSortBy === column) {
-      if (currentOrder === "asc") {
+    if (sortBy === column) {
+      if (order === "asc") {
         return <ChevronUp className="ml-1 h-4 w-4" />;
       } else {
         return <ChevronDown className="ml-1 h-4 w-4" />;
@@ -43,20 +45,12 @@ const IssuesTable = ({ issues }: Props) => {
   };
 
   const handleSorting = (column: keyof Issue) => {
-    const params = new URLSearchParams();
-
-    const currentStatus = searchParams.get("status");
-    const currentSortByParam = searchParams.get("sortBy");
-    const currentOrderParam = searchParams.get("order");
-
-    if (currentStatus) {
-      params.set("status", currentStatus);
-    }
+    const params = new URLSearchParams(searchParams);
 
     params.set("sortBy", column);
 
-    if (currentSortByParam === column) {
-      params.set("order", currentOrderParam === "asc" ? "desc" : "asc");
+    if (sortBy === column) {
+      params.set("order", order === "asc" ? "desc" : "asc");
     } else {
       params.set("order", "asc");
     }
@@ -83,8 +77,9 @@ const IssuesTable = ({ issues }: Props) => {
                     <TableHead key={column.value} className={column.className}>
                       <Button
                         variant={
-                          currentSortBy === column.value ? "secondary" : "ghost"
+                          sortBy === column.value ? "secondary" : "ghost"
                         }
+                        className="cursor-pointer"
                         onClick={() => handleSorting(column.value)}
                       >
                         {column.title}
@@ -145,8 +140,8 @@ const IssuesTable = ({ issues }: Props) => {
       </div>
       <Pagination
         itemCount={issues.length}
-        pageSize={parseInt(pageSize || "10") as 5 | 10 | 20 | 30 | 40 | 50}
-        currentPage={parseInt(currentPage || "1")}
+        pageSize={pageSize || 10}
+        currentPage={currentPage || 1}
       />
     </div>
   );

@@ -15,10 +15,11 @@ import {
   SelectTrigger,
   SelectValue
 } from "./ui/select";
+import { PageSize, pageSizes } from "@/types/PageSize";
 
 interface Props {
   itemCount: number;
-  pageSize: 5 | 10 | 20 | 30 | 40 | 50;
+  pageSize: PageSize;
   currentPage: number;
 }
 
@@ -26,19 +27,19 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const handlePageSizeChange = (newSize: number) => {
+  const handlePageSizeChange = (size: number) => {
     const params = new URLSearchParams(searchParams);
 
-    params.set("pageSize", newSize.toString());
+    params.set("pageSize", size.toString());
     params.set("page", "1");
 
     router.push(`/issues?${params.toString()}`);
   };
 
-  const handlePageChange = (newPage: number) => {
+  const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams);
 
-    params.set("page", newPage.toString());
+    params.set("page", page.toString());
     router.push(`/issues?${params.toString()}`);
   };
 
@@ -52,13 +53,13 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
         <p className="text-sm font-medium">Rows per page</p>
         <Select
           onValueChange={(value) => handlePageSizeChange(parseInt(value))}
-          defaultValue={pageSize.toString()}
+          value={pageSize.toString()}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select page size" />
           </SelectTrigger>
           <SelectContent>
-            {[5, 10, 20, 30, 40, 50].map((size) => (
+            {pageSizes.map((size) => (
               <SelectItem key={size} value={size.toString()}>
                 {size}
               </SelectItem>
