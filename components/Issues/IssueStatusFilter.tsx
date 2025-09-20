@@ -25,11 +25,11 @@ const IssueStatusFilter = ({ status }: Props) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = (newStatus: string) => {
     const params = new URLSearchParams(searchParams);
 
-    if (status !== "all") {
-      params.set("status", status);
+    if (newStatus !== "all") {
+      params.set("status", newStatus);
     } else {
       params.delete("status");
     }
