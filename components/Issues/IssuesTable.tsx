@@ -17,29 +17,23 @@ import { Button } from "../ui/button";
 import IssuePriorityBadge from "./IssuePriorityBadge";
 import IssueStatusBadge from "./IssueStatusBadge";
 
+const columns: { title: string; value: keyof Issue; className?: string }[] = [
+  { title: "Issue", value: "title" },
+  { title: "Status", value: "status", className: "hidden md:table-cell" },
+  { title: "Priority", value: "priority", className: "hidden md:table-cell" },
+  { title: "Created", value: "createdAt", className: "hidden md:table-cell" }
+];
+
 interface Props {
   issues: Issue[];
   issuesCount: number;
+  sortBy?: string;
+  order?: "asc" | "desc";
 }
 
-const IssuesTable = ({ issues, issuesCount }: Props) => {
+const IssuesTable = ({ issues, issuesCount, sortBy, order }: Props) => {
   const searchParams = useSearchParams();
   const router = useRouter();
-
-  // Get current sorting state from URL parameters
-  const sortBy = searchParams.get("sortBy") as keyof Issue | null;
-  const order = searchParams.get("order") as "asc" | "desc" | null;
-
-  const getSortIcon = (column: keyof Issue) => {
-    if (sortBy === column) {
-      if (order === "asc") {
-        return <ChevronUp className="ml-1 h-4 w-4" />;
-      } else {
-        return <ChevronDown className="ml-1 h-4 w-4" />;
-      }
-    }
-    return <ArrowUpDown className="ml-1 h-4 w-4" />;
-  };
 
   const handleSorting = (column: keyof Issue) => {
     const params = new URLSearchParams(searchParams);
@@ -55,12 +49,16 @@ const IssuesTable = ({ issues, issuesCount }: Props) => {
     router.push(`/issues?${params.toString()}`);
   };
 
-  const columns: { title: string; value: keyof Issue; className?: string }[] = [
-    { title: "Issue", value: "title" },
-    { title: "Status", value: "status", className: "hidden md:table-cell" },
-    { title: "Priority", value: "priority", className: "hidden md:table-cell" },
-    { title: "Created", value: "createdAt", className: "hidden md:table-cell" }
-  ];
+  const getSortIcon = (column: keyof Issue) => {
+    if (sortBy === column) {
+      if (order === "asc") {
+        return <ChevronUp className="ml-1 h-4 w-4" />;
+      } else {
+        return <ChevronDown className="ml-1 h-4 w-4" />;
+      }
+    }
+    return <ArrowUpDown className="ml-1 h-4 w-4" />;
+  };
 
   return (
     <div className="mt-4 w-full">
