@@ -1,5 +1,6 @@
 "use client";
 
+import { PageSize, pageSizes } from "@/types/PageSize";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   LuChevronFirst,
@@ -15,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue
 } from "./ui/select";
-import { PageSize, pageSizes } from "@/types/PageSize";
 
 interface Props {
   itemCount: number;
@@ -27,19 +27,19 @@ const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const handlePageSizeChange = (size: number) => {
+  const handlePageSizeChange = (newPageSize: number) => {
     const params = new URLSearchParams(searchParams);
 
-    params.set("pageSize", size.toString());
+    params.set("pageSize", newPageSize.toString());
     params.set("page", "1");
 
     router.push(`/issues?${params.toString()}`);
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams);
 
-    params.set("page", page.toString());
+    params.set("page", newPage.toString());
     router.push(`/issues?${params.toString()}`);
   };
 
