@@ -61,7 +61,7 @@ const IssuesTable = ({ issues, issuesCount, sortBy, order }: Props) => {
   };
 
   return (
-    <div className="mt-4 w-full">
+    <div className="w-full">
       <div className="bg-card rounded-lg border">
         <div className="bg-background w-full overflow-hidden rounded-md border">
           <div className="overflow-x-auto">
