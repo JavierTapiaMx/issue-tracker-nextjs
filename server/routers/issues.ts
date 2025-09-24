@@ -53,6 +53,49 @@ export const issuesRouter = router({
       });
     }
   }),
+  getIssuesCountByStatus: procedure.query(async () => {
+    try {
+      const statuses = Object.values(IssueStatus);
+
+      const counts = await Promise.all(
+        statuses.map(async (status) => {
+          const result = await db
+            .select({ count: count() })
+            .from(issuesTable)
+            .where(eq(issuesTable.status, status));
+          return { status, count: result[0].count };
+        })
+      );
+
+      return counts;
+    } catch (error) {
+      console.error(
+        "Database error when fetching issues count by status:",
+        error
+      );
+
+      // Check if it's a database connection error
+      if (error instanceof Error) {
+        if (
+          error.message.includes("connect") ||
+          error.message.includes("connection")
+        ) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Database connection failed. Please check your database configuration.",
+            cause: error
+          });
+        }
+      }
+
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch issues count by status from database",
+        cause: error
+      });
+    }
+  }),
   getIssues: procedure.input(getIssuesSchema).query(async ({ input }) => {
     const { status, sortBy, order } = input;
 
