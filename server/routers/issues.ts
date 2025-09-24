@@ -149,6 +149,24 @@ export const issuesRouter = router({
       });
     }
   }),
+  getLatest: procedure.query(async () => {
+    try {
+      const issues = await db
+        .select()
+        .from(issuesTable)
+        .orderBy(desc(issuesTable.createdAt))
+        .limit(5);
+      return issues;
+    } catch (error) {
+      console.error("Database error when fetching latest issues:", error);
+
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch latest issues from database",
+        cause: error
+      });
+    }
+  }),
   getById: procedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
