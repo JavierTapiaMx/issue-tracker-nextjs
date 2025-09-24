@@ -30,18 +30,16 @@ const IssuesSummary = ({
   return (
     <div className="flex flex-row gap-4">
       {containers.map((container) => (
-        <Card
+        <Link
           key={container.label}
-          className="flex flex-1 flex-col items-center gap-1"
+          href={`/issues?status=${container.status}`}
+          className="flex-1 cursor-pointer"
         >
-          <Link
-            href={`/issues?status=${container.status}`}
-            className="cursor-pointer text-sm font-medium"
-          >
-            {container.label}
-          </Link>
-          <span className="text-2xl font-bold">{container.value}</span>
-        </Card>
+          <Card className="flex flex-col items-center gap-1">
+            <span className="text-sm font-medium">{container.label}</span>
+            <span className="text-2xl font-bold">{container.value}</span>
+          </Card>
+        </Link>
       ))}
     </div>
   );
