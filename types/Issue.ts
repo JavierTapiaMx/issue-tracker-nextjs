@@ -1,11 +1,9 @@
-import { IssueStatus, IssuePriorities } from "@/db/schema";
+import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
+import { issuesTable } from "@/db/schema";
 
-export type Issue = {
-  id: number;
-  title: string;
-  description: string;
-  status: IssueStatus;
-  priority: IssuePriorities;
-  createdAt: Date;
-  updatedAt: Date;
-};
+// Generate types directly from schema for better type safety
+export type Issue = InferSelectModel<typeof issuesTable>;
+export type NewIssue = InferInsertModel<typeof issuesTable>;
+
+// For forms/API inputs (without auto-generated fields like id, createdAt, updatedAt)
+export type IssueFormInput = Omit<NewIssue, "id" | "createdAt" | "updatedAt">;

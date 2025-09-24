@@ -8,6 +8,13 @@
       "when": 1757476001344,
       "tag": "0000_CreateTableIssues",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1758076115017,
+      "tag": "0001_AddColumnAssignedToUserIdTableIssues",
+      "breakpoints": true
     }
   ]
 }
