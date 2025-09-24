@@ -3,6 +3,7 @@ import IssuesSummary from "@/components/Issues/IssuesSummary";
 import LatestIssues from "@/components/Issues/LatestIssues";
 import { IssueStatus } from "@/db/schema";
 import { trpc } from "@/trpc/server";
+import { Metadata } from "next";
 
 const HomePage = async () => {
   const issuesCountByStatus = await trpc.issues.getIssuesCountByStatus();
@@ -39,3 +40,8 @@ const HomePage = async () => {
 };
 
 export default HomePage;
+
+export const metadata: Metadata = {
+  title: "Issue Tracker - Dashboard",
+  description: "Track and manage your issues efficiently with Issue Tracker."
+};
