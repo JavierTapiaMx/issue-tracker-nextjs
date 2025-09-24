@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { trpc } from "@/trpc/server";
 import Link from "next/link";
-import { Card, CardContent, CardHeader } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import IssueStatusBadge from "./IssueStatusBadge";
 
 const LatestIssues = async () => {
@@ -16,7 +16,9 @@ const LatestIssues = async () => {
 
   return (
     <Card className="w-full">
-      <CardHeader className="text-2xl font-bold">Latest Issues</CardHeader>
+      <CardHeader>
+        <CardTitle className="text-2xl">Latest Issues</CardTitle>
+      </CardHeader>
       <CardContent>
         <Table>
           <TableBody>
