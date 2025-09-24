@@ -80,3 +80,40 @@ const IssueDetailsPage = async ({ params }: Props) => {
 };
 
 export default IssueDetailsPage;
+
+export const generateMetadata = async ({ params }: Props) => {
+  let issue: Issue | null = null;
+
+  const { id } = await params;
+  const issueId = parseInt(id, 10);
+
+  if (isNaN(issueId) || issueId <= 0) {
+    return {
+      title: "Issue Tracker",
+      description: "Issue details page."
+    };
+  }
+
+  try {
+    issue = await trpc.issues.getById({ id: issueId });
+  } catch (error) {
+    console.error("Error fetching issue for metadata:", error);
+
+    return {
+      title: "Issue Tracker",
+      description: "Issue details page."
+    };
+  }
+
+  if (!issue) {
+    return {
+      title: "Issue Tracker",
+      description: "Issue details page."
+    };
+  }
+
+  return {
+    title: issue.title,
+    description: `Details and information about issue id: ${issue.id}`
+  };
+};

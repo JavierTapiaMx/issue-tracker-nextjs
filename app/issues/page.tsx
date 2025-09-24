@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { IssueStatus } from "@/db/schema";
 import { trpc } from "@/trpc/server";
 import { pageSizes } from "@/types/PageSize";
+import { Metadata } from "next";
 import Link from "next/link";
 import { FaRegPlusSquare } from "react-icons/fa";
 // import delay from "del@/components/Issues/IssuesTable
@@ -144,3 +145,8 @@ const IssuesPage = async ({ searchParams }: Props) => {
 };
 
 export default IssuesPage;
+
+export const metadata: Metadata = {
+  title: "Issue Tracker - Issues",
+  description: "View, manage, and track all your project issues in one place."
+};
