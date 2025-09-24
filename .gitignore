@@ -48,6 +48,9 @@ yarn-error.log*
 *.env.backup
 *.env.bak
 
+# Sentry configuration file
+.env.sentry-build-plugin
+
 # IDE and editor environment files
 .vscode/settings.json
 .idea/workspace.xml
