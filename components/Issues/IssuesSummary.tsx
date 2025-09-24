@@ -32,7 +32,7 @@ const IssuesSummary = ({
       {containers.map((container) => (
         <Card
           key={container.label}
-          className="flex flex-col items-center gap-1 p-4"
+          className="flex flex-1 flex-col items-center gap-1"
         >
           <Link
             href={`/issues?status=${container.status}`}
