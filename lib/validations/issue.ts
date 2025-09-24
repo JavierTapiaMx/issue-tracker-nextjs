@@ -1,4 +1,5 @@
 import { IssuePriorities, IssueStatus } from "@/db/schema";
+import { pageSizes } from "@/types/PageSize";
 import { z } from "zod";
 
 // Base schema with common field validations
@@ -40,6 +41,24 @@ export const issueFormSchema = z.object({
   assignedToUserId: baseIssueFields.assignedToUserId.optional()
 });
 
+export const getIssuesSchema = z.object({
+  status: z.enum([...Object.values(IssueStatus), "all"] as const).optional(),
+  sortBy: z
+    .enum(["title", "status", "priority", "createdAt"] as const)
+    .optional(),
+  order: z.enum(["asc", "desc"] as const).optional(),
+  pageSize: z
+    .number()
+    .int()
+    .refine((val) => pageSizes.includes(val), {
+      message: "Page size must be one of the valid page sizes"
+    })
+    .optional()
+    .default(10),
+  page: z.number().int().positive().optional().default(1)
+});
+
 export type AddIssueInput = z.infer<typeof addIssueSchema>;
 export type UpdateIssueInput = z.infer<typeof updateIssueSchema>;
 export type IssueFormInput = z.infer<typeof issueFormSchema>;
+export type GetIssuesInput = z.infer<typeof getIssuesSchema>;

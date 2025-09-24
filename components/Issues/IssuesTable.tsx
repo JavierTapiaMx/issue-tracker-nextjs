@@ -1,9 +1,5 @@
 "use client";
 
-import { Issue } from "@/types/Issue";
-import IssueStatusBadge from "./IssueStatusBadge";
-import IssuePriorityBadge from "./IssuePriorityBadge";
-
 import {
   Table,
   TableBody,
@@ -13,33 +9,82 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
+import { Issue } from "@/types/Issue";
+import { ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "../ui/button";
+import IssuePriorityBadge from "./IssuePriorityBadge";
+import IssueStatusBadge from "./IssueStatusBadge";
+
+const columns: { title: string; value: keyof Issue; className?: string }[] = [
+  { title: "Issue", value: "title" },
+  { title: "Status", value: "status", className: "hidden md:table-cell" },
+  { title: "Priority", value: "priority", className: "hidden md:table-cell" },
+  { title: "Created", value: "createdAt", className: "hidden md:table-cell" }
+];
 
 interface Props {
   issues: Issue[];
+  issuesCount: number;
+  sortBy?: string;
+  order?: "asc" | "desc";
 }
 
-const IssuesTable = ({ issues }: Props) => {
+const IssuesTable = ({ issues, issuesCount, sortBy, order }: Props) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const handleSorting = (column: keyof Issue) => {
+    const params = new URLSearchParams(searchParams);
+
+    params.set("sortBy", column);
+
+    if (sortBy === column) {
+      params.set("order", order === "asc" ? "desc" : "asc");
+    } else {
+      params.set("order", "asc");
+    }
+
+    router.push(`/issues?${params.toString()}`);
+  };
+
+  const getSortIcon = (column: keyof Issue) => {
+    if (sortBy === column) {
+      if (order === "asc") {
+        return <ChevronUp className="ml-1 h-4 w-4" />;
+      } else {
+        return <ChevronDown className="ml-1 h-4 w-4" />;
+      }
+    }
+    return <ArrowUpDown className="ml-1 h-4 w-4" />;
+  };
+
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full">
       <div className="bg-card rounded-lg border">
         <div className="bg-background w-full overflow-hidden rounded-md border">
           <div className="overflow-x-auto">
             <Table>
-              <TableCaption className="text-muted-foreground mt-8 text-sm">
-                Total: {issues.length}{" "}
-                {issues.length === 1 ? "issue" : "issues"}
+              <TableCaption className="text-muted-foreground my-4 text-sm">
+                Total: {issuesCount} {issuesCount === 1 ? "issue" : "issues"}
               </TableCaption>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead className="hidden md:table-cell">Status</TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    Priority
-                  </TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    Created
-                  </TableHead>
+                  {columns.map((column) => (
+                    <TableHead key={column.value} className={column.className}>
+                      <Button
+                        variant={
+                          sortBy === column.value ? "secondary" : "ghost"
+                        }
+                        className="cursor-pointer"
+                        onClick={() => handleSorting(column.value)}
+                      >
+                        {column.title}
+                        {getSortIcon(column.value)}
+                      </Button>
+                    </TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -56,7 +101,7 @@ const IssuesTable = ({ issues }: Props) => {
                       </div>
                       {/* Mobile-only: Show additional info below title */}
                       <div className="text-muted-foreground block space-y-2 text-sm md:hidden">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-row items-center gap-2">
                           <IssueStatusBadge status={issue.status} />
                           <IssuePriorityBadge priority={issue.priority} />
                         </div>

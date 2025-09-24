@@ -1,12 +1,167 @@
 import { db } from "@/db/drizzle";
 import { issuesTable, IssueStatus } from "@/db/schema";
-import { addIssueSchema, updateIssueSchema } from "@/lib/validations/issue";
+import {
+  addIssueSchema,
+  getIssuesSchema,
+  updateIssueSchema
+} from "@/lib/validations/issue";
 import { procedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { asc, desc, eq, count } from "drizzle-orm";
 import z from "zod";
 
 export const issuesRouter = router({
+  getIssuesCount: procedure.input(getIssuesSchema).query(async ({ input }) => {
+    const { status } = input;
+
+    try {
+      if (status && status !== "all") {
+        const result = await db
+          .select({ count: count() })
+          .from(issuesTable)
+          .where(eq(issuesTable.status, status));
+
+        return result[0].count;
+      }
+
+      const result = await db.select({ count: count() }).from(issuesTable);
+
+      return result[0].count;
+    } catch (error) {
+      console.error("Database error when fetching issues count:", error);
+
+      // Check if it's a database connection error
+      if (error instanceof Error) {
+        if (
+          error.message.includes("connect") ||
+          error.message.includes("connection")
+        ) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Database connection failed. Please check your database configuration.",
+            cause: error
+          });
+        }
+      }
+
+      // Generic database error
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch issues count from database",
+        cause: error
+      });
+    }
+  }),
+  getIssuesCountByStatus: procedure.query(async () => {
+    try {
+      const statuses = Object.values(IssueStatus);
+
+      const counts = await Promise.all(
+        statuses.map(async (status) => {
+          const result = await db
+            .select({ count: count() })
+            .from(issuesTable)
+            .where(eq(issuesTable.status, status));
+          return { status, count: result[0].count };
+        })
+      );
+
+      return counts;
+    } catch (error) {
+      console.error(
+        "Database error when fetching issues count by status:",
+        error
+      );
+
+      // Check if it's a database connection error
+      if (error instanceof Error) {
+        if (
+          error.message.includes("connect") ||
+          error.message.includes("connection")
+        ) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Database connection failed. Please check your database configuration.",
+            cause: error
+          });
+        }
+      }
+
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch issues count by status from database",
+        cause: error
+      });
+    }
+  }),
+  getIssues: procedure.input(getIssuesSchema).query(async ({ input }) => {
+    const { status, sortBy, order } = input;
+
+    try {
+      const baseQuery = db.select().from(issuesTable);
+
+      if (status && status !== "all" && sortBy) {
+        const sortDirection = order === "desc" ? desc : asc;
+        const column = issuesTable[sortBy];
+
+        const issues = await baseQuery
+          .where(eq(issuesTable.status, status))
+          .orderBy(sortDirection(column))
+          .offset((input.page - 1) * input.pageSize)
+          .limit(input.pageSize);
+
+        return issues;
+      } else if (status && status !== "all") {
+        const issues = await baseQuery
+          .where(eq(issuesTable.status, status))
+          .offset((input.page - 1) * input.pageSize)
+          .limit(input.pageSize);
+
+        return issues;
+      } else if (sortBy) {
+        const sortDirection = order === "desc" ? desc : asc;
+        const column = issuesTable[sortBy];
+        const issues = await baseQuery
+          .orderBy(sortDirection(column))
+          .offset((input.page - 1) * input.pageSize)
+          .limit(input.pageSize);
+
+        return issues;
+      } else {
+        const issues = await baseQuery
+          .offset((input.page - 1) * input.pageSize)
+          .limit(input.pageSize);
+
+        return issues;
+      }
+    } catch (error) {
+      console.error("Database error when fetching issues:", error);
+
+      // Check if it's a database connection error
+      if (error instanceof Error) {
+        if (
+          error.message.includes("connect") ||
+          error.message.includes("connection")
+        ) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "Database connection failed. Please check your database configuration.",
+            cause: error
+          });
+        }
+      }
+
+      // Generic database error
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch issues from database",
+        cause: error
+      });
+    }
+  }),
   getAll: procedure.query(async () => {
     try {
       const issues = await db.select().from(issuesTable);
@@ -33,6 +188,24 @@ export const issuesRouter = router({
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "Failed to fetch issues from database",
+        cause: error
+      });
+    }
+  }),
+  getLatest: procedure.query(async () => {
+    try {
+      const issues = await db
+        .select()
+        .from(issuesTable)
+        .orderBy(desc(issuesTable.createdAt))
+        .limit(5);
+      return issues;
+    } catch (error) {
+      console.error("Database error when fetching latest issues:", error);
+
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch latest issues from database",
         cause: error
       });
     }
